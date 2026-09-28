@@ -67,7 +67,7 @@
 </head>
 <body class="h-screen flex flex-col overflow-hidden font-sans text-custom-dark relative">
 
-    <!-- Loading Overlay -->
+    <!-- Loading Overlay (僅在登入或初次載入時顯示) -->
     <div id="loading-overlay" class="hidden absolute inset-0 bg-custom-base/80 backdrop-blur-[2px] z-[100] flex-col items-center justify-center">
         <i class="fas fa-circle-notch fa-spin text-4xl text-custom-accent mb-4"></i>
         <p class="text-custom-dark font-bold tracking-widest text-sm uppercase">資料同步中</p>
@@ -76,6 +76,7 @@
     <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed top-6 left-1/2 -translate-x-1/2 z-[70] flex flex-col gap-3 pointer-events-none"></div>
 
+    <!-- Login Screen -->
     <div id="login-screen" class="absolute inset-0 z-50 flex items-center justify-center bg-custom-base">
         <div class="bg-white p-10 rounded-2xl shadow-soft w-full max-w-sm mx-4 relative overflow-hidden border border-custom-dark/10">
             <div class="absolute top-0 left-0 w-full h-1 bg-custom-accent"></div>
@@ -104,6 +105,7 @@
         </div>
     </div>
 
+    <!-- Main App Screen -->
     <div id="app-screen" class="hidden flex-col h-full w-full">
         <!-- Top Navbar -->
         <nav class="bg-white shrink-0 z-20 shadow-sm border-b border-custom-dark/10">
@@ -170,9 +172,7 @@
                 </div>
 
                 <div id="interactive-section" class="shrink-0 flex flex-col gap-3 w-full">
-                    <div id="months-grid" class="flex gap-2 lg:gap-3 overflow-x-auto pb-2 custom-scrollbar">
-                        <!-- Dynamically injected -->
-                    </div>
+                    <div id="months-grid" class="flex gap-2 lg:gap-3 overflow-x-auto pb-2 custom-scrollbar"></div>
                 </div>
 
                 <div class="flex-1 flex flex-col min-h-0 bg-white rounded-xl shadow-soft border border-custom-dark/10 w-full overflow-hidden relative">
@@ -191,6 +191,7 @@
         </main>
     </div>
 
+    <!-- Add Item Modal -->
     <div id="add-modal" class="hidden fixed inset-0 bg-custom-dark/20 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col border border-custom-dark/10">
             <div class="px-6 py-5 flex justify-between items-center shrink-0 border-b border-custom-base">
@@ -248,6 +249,7 @@
         </div>
     </div>
 
+    <!-- Retrieve Modal -->
     <div id="retrieve-modal" class="hidden fixed inset-0 bg-custom-dark/20 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden transform transition-transform scale-95 opacity-0 border border-custom-dark/10" id="retrieve-modal-content">
             <div class="p-8 text-center relative">
@@ -280,7 +282,8 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbxCLUDHt9R22rFYW2VAYStejAOjlkyXQasyKVezQEexFxgL_yEdYXlImONzU0vwAAL8/exec";
         // ==========================================
 
-        let currentUser = localStorage.getItem('boutique_lf_user_v6') || '';
+        let currentUser = localStorage.getItem('boutique_lf_user_v7') || '';
+        let currentPassword = localStorage.getItem('boutique_lf_pass_v7') || '';
         let currentTab = 'safe'; 
         let currentMonth = new Date().getMonth() + 1;
         let dbItems = [];
@@ -329,7 +332,7 @@
                 renderList(true);
             });
 
-            if (currentUser) {
+            if (currentUser && currentPassword) {
                 showApp();
                 loadData();
             } else {
@@ -341,6 +344,7 @@
             ui.loadingOverlay.style.display = show ? 'flex' : 'none';
         }
 
+        // --- 登入邏輯 ---
         ui.loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const u = ui.usernameInput.value.trim();
@@ -356,7 +360,9 @@
 
                 if(res.success) {
                     currentUser = res.user;
-                    localStorage.setItem('boutique_lf_user_v6', currentUser);
+                    currentPassword = p;
+                    localStorage.setItem('boutique_lf_user_v7', currentUser);
+                    localStorage.setItem('boutique_lf_pass_v7', currentPassword);
                     showApp();
                     loadData();
                     showToast(`登入成功，歡迎 ${currentUser}`, 'success');
@@ -364,58 +370,87 @@
                     showToast(res.message, 'error');
                 }
             } catch(err) {
-                showToast("登入連線失敗，請檢查 API_URL", 'error');
+                showToast("登入連線失敗，請檢查網址", 'error');
             }
             toggleLoader(false);
         });
 
+        // --- 讀取資料 (有載入畫面) ---
         async function loadData() {
             toggleLoader(true);
             try {
                 const res = await fetch(API_URL, {
                     method: "POST",
-                    body: JSON.stringify({ action: "getData" })
+                    body: JSON.stringify({ action: "getData", username: currentUser, password: currentPassword }) 
                 }).then(r => r.json());
                 
                 if(res.success) {
-                    dbItems = [];
-                    // 映射：保險箱
-                    (res.data.valuable || []).forEach(d => {
-                        dbItems.push({
-                            id: d['ID'], category: 'safe', date: d['日期'], month: parseInt(d['月份']),
-                            room: d['房號'], name: d['物品名稱'], finder: d['拾獲人'], note: d['備註'],
-                            status: 'active', addedBy: d['建立者'] || '系統'
-                        });
-                    });
-                    // 映射：保留區
-                    (res.data.soon || []).forEach(d => {
-                        dbItems.push({
-                            id: d['ID'], category: 'retention', date: d['日期'], month: parseInt(d['月份']),
-                            room: d['房號'], name: d['物品名稱'], finder: d['拾獲人'], note: d['備註'],
-                            status: 'active', addedBy: d['建立者'] || '系統'
-                        });
-                    });
-                    // 映射：刪除區
-                    (res.data.deleted || []).forEach(d => {
-                        dbItems.push({
-                            id: d['ID'], category: d['原區域'] === '保險箱' ? 'safe' : 'retention',
-                            date: d['日期'], month: parseInt(d['月份']), room: d['房號'],
-                            name: d['物品名稱'], finder: d['拾獲人'], note: d['備註'], status: 'deleted', 
-                            deleteReason: d['狀態'] === '客人取走' ? 'guest' : 'expired',
-                            deletedBy: d['處理人'] || '系統', deletedAtStr: d['處理時間']
-                        });
-                    });
+                    processFetchedData(res.data);
                     renderView();
+                } else {
+                    showToast("授權已過期或密碼錯誤，請重新登入", "error");
+                    handleLogout();
                 }
             } catch (e) {
-                showToast("讀取資料失敗，請檢查連線", "error");
+                showToast("讀取資料失敗", "error");
             }
             toggleLoader(false);
         }
 
+        // --- 背景默默同步 (無載入畫面) ---
+        async function loadDataBackground() {
+            try {
+                const res = await fetch(API_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "getData", username: currentUser, password: currentPassword }) 
+                }).then(r => r.json());
+                
+                if(res.success) {
+                    processFetchedData(res.data);
+                    renderView();
+                }
+            } catch (e) {
+                console.log("背景同步失敗", e);
+            }
+        }
+
+        // 每 5 分鐘自動背景同步
+        setInterval(() => {
+            if (currentUser) loadDataBackground();
+        }, 5 * 60 * 1000);
+
+        function processFetchedData(data) {
+            dbItems = [];
+            (data.valuable || []).forEach(d => {
+                dbItems.push({
+                    id: d['ID'], category: 'safe', date: d['日期'], month: parseInt(d['月份']),
+                    room: d['房號'], name: d['物品名稱'], finder: d['拾獲人'], note: d['備註'],
+                    status: 'active', addedBy: d['建立者'] || '系統'
+                });
+            });
+            (data.soon || []).forEach(d => {
+                dbItems.push({
+                    id: d['ID'], category: 'retention', date: d['日期'], month: parseInt(d['月份']),
+                    room: d['房號'], name: d['物品名稱'], finder: d['拾獲人'], note: d['備註'],
+                    status: 'active', addedBy: d['建立者'] || '系統'
+                });
+            });
+            (data.deleted || []).forEach(d => {
+                dbItems.push({
+                    id: d['ID'], category: d['原區域'] === '保險箱' ? 'safe' : 'retention',
+                    date: d['日期'], month: parseInt(d['月份']), room: d['房號'],
+                    name: d['物品名稱'], finder: d['拾獲人'], note: d['備註'], status: 'deleted', 
+                    deleteReason: d['狀態'] === '客人取走' ? 'guest' : 'expired',
+                    deletedBy: d['處理人'] || '系統', deletedAtStr: d['處理時間']
+                });
+            });
+        }
+
         function handleLogout() {
             currentUser = '';
-            localStorage.removeItem('boutique_lf_user_v6');
+            currentPassword = '';
+            localStorage.removeItem('boutique_lf_user_v7');
+            localStorage.removeItem('boutique_lf_pass_v7');
             showLogin();
         }
 
@@ -499,7 +534,6 @@
 
         function renderView() {
             updateBadges();
-
             if (currentTab === 'deleted') {
                 ui.interactiveSection.classList.add('hidden');
                 ui.searchSection.classList.remove('hidden');
@@ -515,11 +549,9 @@
 
         function renderMonthsGrid() {
             ui.monthsGrid.innerHTML = '';
-            
             for (let i = 1; i <= 12; i++) {
                 const hasItems = dbItems.some(item => item.status === 'active' && item.category === currentTab && item.month === i);
                 const isSelected = i === currentMonth;
-                
                 const btn = document.createElement('button');
                 btn.className = `min-w-[50px] lg:min-w-[56px] flex-shrink-0 h-[50px] lg:h-[56px] rounded-xl flex flex-col items-center justify-center transition-all duration-200 border `;
                 
@@ -536,7 +568,6 @@
                     <span class="text-base lg:text-lg font-bold leading-none mb-0.5">${i}</span>
                     <span class="text-[9px] tracking-widest uppercase opacity-80">月</span>
                 `;
-                
                 btn.onclick = () => { currentMonth = i; renderView(); };
                 ui.monthsGrid.appendChild(btn);
             }
@@ -557,7 +588,6 @@
                         (item.finder && item.finder.toLowerCase().includes(searchQuery))
                     );
                 }
-                // 日期字串排序 (反向排序)
                 list.sort((a, b) => new Date(b.deletedAtStr) - new Date(a.deletedAtStr));
             } else {
                 list = dbItems.filter(item => item.status === 'active' && item.category === currentTab && item.month === currentMonth);
@@ -579,7 +609,6 @@
             } else {
                 ui.emptyState.classList.add('hidden');
                 ui.emptyState.classList.remove('flex');
-                
                 list.forEach(item => {
                     ui.listContainer.insertAdjacentHTML('beforeend', isDeleted ? createDeletedRow(item) : createActiveRow(item));
                 });
@@ -593,7 +622,6 @@
                     <div class="flex items-center gap-3 md:w-32 shrink-0">
                         <span class="text-xs font-bold text-custom-dark/50 tracking-wider">${item.date}</span>
                     </div>
-                    
                     <div class="flex flex-col min-w-0 flex-1">
                         <div class="flex items-center gap-3">
                             <span class="font-bold text-custom-dark text-lg whitespace-nowrap">Rm ${item.room}</span>
@@ -605,7 +633,6 @@
                         </div>
                     </div>
                 </div>
-                
                 <div class="flex items-center gap-4 shrink-0 self-end md:self-auto mt-2 md:mt-0">
                     <div class="text-[10px] text-right text-custom-dark/40 mr-2 hidden sm:block">
                         建檔<br><span class="font-bold tracking-wide">${item.addedBy}</span>
@@ -614,15 +641,13 @@
                         取出
                     </button>
                 </div>
-            </div>
-            `;
+            </div>`;
         }
 
         function createDeletedRow(item) {
             const reasonBadge = item.deleteReason === 'guest' 
                 ? `<span class="text-custom-accent text-[11px] font-bold"><i class="fas fa-user-check mr-1"></i>客人取走</span>`
                 : `<span class="text-custom-dark/60 text-[11px] font-bold"><i class="fas fa-trash-alt mr-1"></i>逾期整理</span>`;
-
             const originName = item.category === 'safe' ? '保險箱' : '保留區';
 
             return `
@@ -632,7 +657,6 @@
                         <span class="text-[10px] px-1.5 py-0.5 bg-custom-base text-custom-dark/60 rounded border border-custom-dark/10">${originName}</span>
                         <span class="text-xs font-bold text-custom-dark/40 tracking-wider line-through decoration-custom-dark/20">${item.date}</span>
                     </div>
-                    
                     <div class="flex flex-col min-w-0 flex-1">
                         <div class="flex items-center gap-3">
                             <span class="font-bold text-custom-dark/50 text-lg whitespace-nowrap line-through decoration-custom-dark/20">Rm ${item.room}</span>
@@ -641,13 +665,11 @@
                         </div>
                     </div>
                 </div>
-                
                 <div class="flex flex-col items-end shrink-0 self-end md:self-auto text-[10px] text-custom-dark/50 mt-2 md:mt-0 bg-custom-base/40 px-3 py-1.5 rounded">
                     <div>處理人: <span class="font-bold">${item.deletedBy}</span></div>
                     <div>${item.deletedAtStr}</div>
                 </div>
-            </div>
-            `;
+            </div>`;
         }
 
         function openAddModal() {
@@ -656,7 +678,6 @@
             } else {
                 document.getElementById('add-category').value = 'safe';
             }
-            
             document.getElementById('add-room').value = '';
             document.getElementById('add-name').value = '';
             document.getElementById('add-finder').value = '';
@@ -670,117 +691,62 @@
         function closeAddModal() {
             ui.addModal.querySelector('div').classList.remove('modal-enter-active');
             ui.addModal.querySelector('div').classList.add('modal-enter');
-            setTimeout(() => {
-                ui.addModal.classList.add('hidden');
-            }, 250);
+            setTimeout(() => { ui.addModal.classList.add('hidden'); }, 250);
         }
 
+        // --- 樂觀更新：秒加物品 ---
         async function submitAddItem() {
-    const cat = document.getElementById('add-category').value;
-    const dateVal = document.getElementById('add-date').value;
-    const room = document.getElementById('add-room').value.trim();
-    const name = document.getElementById('add-name').value.trim();
-    const finder = document.getElementById('add-finder').value.trim();
-    const note = document.getElementById('add-note').value.trim();
+            const cat = document.getElementById('add-category').value;
+            const dateVal = document.getElementById('add-date').value;
+            const room = document.getElementById('add-room').value.trim();
+            const name = document.getElementById('add-name').value.trim();
+            const finder = document.getElementById('add-finder').value.trim();
+            const note = document.getElementById('add-note').value.trim();
 
-    if (!dateVal || !room || !name) {
-        showToast('請填寫日期、房號與物品名稱', 'error');
-        return;
-    }
+            if (!dateVal || !room || !name) {
+                return showToast('請填寫日期、房號與物品名稱', 'error');
+            }
 
-    const parsedMonth = parseInt(dateVal.split('-')[1], 10);
-    const mappedTab = cat === 'safe' ? '保險箱' : '保留區';
+            const parsedMonth = parseInt(dateVal.split('-')[1], 10);
+            const mappedTab = cat === 'safe' ? '保險箱' : '保留區';
 
-    // ⚡ 第一步：不顯示載入圈圈，直接把資料塞進網頁記憶體並重繪畫面
-    const tempId = Date.now().toString(); // 產生暫時ID
-    dbItems.push({
-        id: tempId, category: cat, date: dateVal, month: parsedMonth,
-        room: room, name: name, finder: finder, note: note,
-        status: 'active', addedBy: currentUser
-    });
-    
-    closeAddModal();
-    showToast(`✅ 已新增：Rm ${room} ${name} (背景同步中...)`, 'success');
-    
-    // 讓畫面瞬間跳到新增的那個月份
-    currentTab = cat;
-    currentMonth = parsedMonth;
-    ui.btnDeletedZone.classList.remove('bg-custom-dark', 'text-white');
-    ui.btnDeletedZone.classList.add('bg-custom-base', 'text-custom-dark');
-    renderView(); 
-
-    // ☁️ 第二步：在背景默默將資料傳給 Google 試算表
-    try {
-        await fetch(API_URL, {
-            method: "POST",
-            body: JSON.stringify({
-                action: "addItem", tab: mappedTab, date: dateVal, month: parsedMonth,
-                room: room, itemName: name, finder: finder, notes: note,
-                username: currentUser, password: currentPassword
-            })
-        });
-        // 寫入成功後，在背景偷偷拉取最新資料，確保與其他同事同步
-        loadDataBackground();
-    } catch(e) {
-        showToast("⚠️ 背景同步失敗，請檢查網路連線", "error");
-    }
-}
-
-
-        sync function loadDataBackground() {
-    // 這個函數跟 loadData 一樣，差別在於它『不會叫出遮罩轉圈圈』
-    try {
-        const res = await fetch(API_URL, {
-            method: "POST",
-            body: JSON.stringify({ action: "getData", username: currentUser, password: currentPassword }) 
-        }).then(r => r.json());
-        
-        if(res.success) {
-            dbItems = [];
-            (res.data.valuable || []).forEach(d => {
-                dbItems.push({
-                    id: d['ID'], category: 'safe', date: d['日期'], month: parseInt(d['月份']),
-                    room: d['房號'], name: d['物品名稱'], finder: d['拾獲人'], note: d['備註'],
-                    status: 'active', addedBy: d['建立者'] || '系統'
-                });
+            // 1. 瞬間塞入本地記憶體並重繪
+            const tempId = 'temp_' + Date.now().toString();
+            dbItems.push({
+                id: tempId, category: cat, date: dateVal, month: parsedMonth,
+                room: room, name: name, finder: finder, note: note,
+                status: 'active', addedBy: currentUser
             });
-            (res.data.soon || []).forEach(d => {
-                dbItems.push({
-                    id: d['ID'], category: 'retention', date: d['日期'], month: parseInt(d['月份']),
-                    room: d['房號'], name: d['物品名稱'], finder: d['拾獲人'], note: d['備註'],
-                    status: 'active', addedBy: d['建立者'] || '系統'
+            
+            closeAddModal();
+            showToast(`✅ 已新增：Rm ${room} ${name} (背景同步中...)`, 'success');
+            
+            currentTab = cat;
+            currentMonth = parsedMonth;
+            ui.btnDeletedZone.classList.remove('bg-custom-dark', 'text-white');
+            ui.btnDeletedZone.classList.add('bg-custom-base', 'text-custom-dark');
+            renderView(); 
+
+            // 2. 背景發送給 Google 試算表
+            try {
+                await fetch(API_URL, {
+                    method: "POST",
+                    body: JSON.stringify({
+                        action: "addItem", tab: mappedTab, date: dateVal, month: parsedMonth,
+                        room: room, itemName: name, finder: finder, notes: note,
+                        username: currentUser, password: currentPassword
+                    })
                 });
-            });
-            (res.data.deleted || []).forEach(d => {
-                dbItems.push({
-                    id: d['ID'], category: d['原區域'] === '保險箱' ? 'safe' : 'retention',
-                    date: d['日期'], month: parseInt(d['月份']), room: d['房號'],
-                    name: d['物品名稱'], finder: d['拾獲人'], note: d['備註'], status: 'deleted', 
-                    deleteReason: d['狀態'] === '客人取走' ? 'guest' : 'expired',
-                    deletedBy: d['處理人'] || '系統', deletedAtStr: d['處理時間']
-                });
-            });
-            // 資料拉完後默默刷新畫面數字與列表，使用者完全無感
-            renderView();
+                loadDataBackground(); // 同步回最新 ID
+            } catch(e) {
+                showToast("⚠️ 背景同步失敗，請檢查網路連線", "error");
+            }
         }
-    } catch (e) {
-        console.log("背景同步失敗", e);
-    }
-}
 
-// ⏱️ 設定定時器：每 5 分鐘自動在背景同步一次資料 (避免其他同事更新了你看不到)
-setInterval(() => {
-    if (currentUser) {
-        loadDataBackground();
-    }
-}, 5 * 60 * 1000);
-
-        
         function openRetrieveModal(id) {
             const item = dbItems.find(i => i.id === id);
             if (!item) return;
             itemToRetrieve = id;
-            
             document.getElementById('retrieve-room').innerText = item.room;
             document.getElementById('retrieve-name').innerText = item.name;
             
@@ -800,49 +766,48 @@ setInterval(() => {
             }, 200);
         }
 
+        // --- 樂觀更新：秒刪物品 ---
         async function executeRetrieve(reason) {
-    if (!itemToRetrieve) return;
-    const item = dbItems.find(i => i.id === itemToRetrieve);
-    
-    if (item) {
-        const mappedTab = item.category === 'safe' ? '保險箱' : '保留區';
-        const mappedReason = reason === 'guest' ? '客人取走' : '逾期整理';
+            if (!itemToRetrieve) return;
+            const item = dbItems.find(i => i.id === itemToRetrieve);
+            
+            if (item) {
+                const mappedTab = item.category === 'safe' ? '保險箱' : '保留區';
+                const mappedReason = reason === 'guest' ? '客人取走' : '逾期整理';
 
-        // ⚡ 第一步：瞬間在網頁端把物品標示為刪除/取出
-        item.status = 'deleted';
-        item.deleteReason = reason;
-        item.deletedBy = currentUser;
-        
-        const now = new Date();
-        item.deletedAtStr = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-        
-        closeRetrieveModal();
-        const msg = reason === 'guest' ? '✅ 客人已取走 (背景同步中...)' : '✅ 已逾期整理 (背景同步中...)';
-        showToast(msg, 'success');
-        renderView(); // 瞬間重繪畫面，物品立刻消失跑到刪除區
+                // 1. 瞬間修改本地狀態並重繪
+                item.status = 'deleted';
+                item.deleteReason = reason;
+                item.deletedBy = currentUser;
+                const now = new Date();
+                item.deletedAtStr = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+                
+                closeRetrieveModal();
+                const msg = reason === 'guest' ? '✅ 客人已取走 (背景同步中...)' : '✅ 已逾期整理 (背景同步中...)';
+                showToast(msg, 'success');
+                renderView();
 
-        // ☁️ 第二步：背景默默通知 Google 試算表
-        try {
-            await fetch(API_URL, {
-                method: "POST",
-                body: JSON.stringify({
-                    action: "deleteItem", tab: mappedTab, id: item.id, retrieveType: mappedReason,
-                    username: currentUser, password: currentPassword
-                })
-            });
-            loadDataBackground(); // 同步回最新狀態
-        } catch(e) {
-            showToast("⚠️ 更新失敗，請檢查網路", "error");
+                // 2. 背景通知 Google 試算表
+                try {
+                    await fetch(API_URL, {
+                        method: "POST",
+                        body: JSON.stringify({
+                            action: "deleteItem", tab: mappedTab, id: item.id, retrieveType: mappedReason,
+                            username: currentUser, password: currentPassword
+                        })
+                    });
+                    loadDataBackground();
+                } catch(e) {
+                    showToast("⚠️ 更新失敗，請檢查網路", "error");
+                }
+            } else {
+                closeRetrieveModal();
+            }
         }
-    } else {
-        closeRetrieveModal();
-    }
-}
 
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            
             const style = type === 'success' ? 'bg-custom-dark text-white' : 'bg-red-500 text-white';
             const icon = type === 'success' ? 'fa-check' : 'fa-exclamation-triangle';
             
@@ -850,10 +815,7 @@ setInterval(() => {
             toast.innerHTML = `<i class="fas ${icon}"></i> <span class="font-medium tracking-wide">${message}</span>`;
             
             container.appendChild(toast);
-            
-            requestAnimationFrame(() => {
-                toast.classList.remove('-translate-y-full', 'opacity-0');
-            });
+            requestAnimationFrame(() => toast.classList.remove('-translate-y-full', 'opacity-0'));
 
             setTimeout(() => {
                 toast.classList.add('-translate-y-full', 'opacity-0');
