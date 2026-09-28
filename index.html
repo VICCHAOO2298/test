@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>礁溪老爺遺留物保險箱及保留櫃登記</title>
+    <title>遺留物保險箱及保留櫃物品登記系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -85,7 +85,7 @@
                     <i class="fas fa-box-open text-xl text-custom-accent"></i>
                 </div>
                 <h1 class="text-xl font-bold text-custom-dark tracking-wide">礁溪老爺酒店遺留物</h1>
-                <p class="text-custom-dark/50 mt-1 text-xs tracking-widest uppercase font-medium">保險箱及保留櫃登記</p>
+                <p class="text-custom-dark/50 mt-1 text-xs tracking-widest uppercase font-medium">保險箱及保留櫃物品登記</p>
             </div>
             <form id="login-form" class="space-y-4">
                 <div>
@@ -113,16 +113,16 @@
                 <div class="flex justify-between h-16 items-center">
                     <div class="flex items-center gap-3">
                         <i class="fas fa-box-open text-custom-accent text-lg"></i>
-                        <h1 class="font-bold text-base md:text-lg tracking-wide whitespace-nowrap">遺留物管理</h1>
+                        <h1 class="font-bold text-base md:text-lg tracking-wide whitespace-nowrap">房務課遺留物管理系統</h1>
                     </div>
                     
                     <div class="flex items-center gap-2 md:gap-4">
                         <button onclick="openAddModal()" class="bg-custom-accent hover:opacity-90 text-white px-3 py-2 md:px-4 rounded-lg text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap">
-                            <i class="fas fa-plus"></i> <span class="hidden md:inline">新增物品</span>
+                            <i class="fas fa-plus"></i> <span class="hidden md:inline">新增品項</span>
                         </button>
                         
                         <button onclick="switchToDeletedZone()" id="btn-deleted-zone" class="bg-custom-base hover:bg-custom-dark hover:text-white text-custom-dark px-3 py-2 md:px-4 border border-custom-dark/10 rounded-lg text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap">
-                            <i class="fas fa-archive text-xs md:text-sm"></i> <span class="hidden md:inline">刪除區紀錄</span>
+                            <i class="fas fa-archive text-xs md:text-sm"></i> <span class="hidden md:inline">紀錄留存</span>
                         </button>
                         
                         <div class="h-6 w-px bg-custom-dark/10 mx-1 md:mx-2 hidden sm:block"></div>
@@ -414,10 +414,10 @@
             }
         }
 
-        // 每 5 分鐘自動背景同步
+        // 每 3 分鐘自動背景同步
         setInterval(() => {
             if (currentUser) loadDataBackground();
-        }, 5 * 60 * 1000);
+        }, 3 * 60 * 1000);
 
         function processFetchedData(data) {
             dbItems = [];
