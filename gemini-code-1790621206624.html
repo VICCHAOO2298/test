@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>遺留物管理系統</title>
+<style>
+  /* 嚴格遵照指定配色：水藍 #72c3d7, 暖灰 #666464, 米白 #f2f0ed */
+  :root {
+    --bg-color: #f2f0ed;
+    --text-color: #666464;
+    --primary-color: #72c3d7;
+    --white: #ffffff;
+    --border-color: #e5e5e5;
+  }
+  
+  body {
+    font-family: 'Helvetica Neue', Arial, 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+  }
+
+  .container { max-width: 900px; margin: 0 auto; }
+
+  /* 載入中遮罩 */
+  #loading-overlay {
+    display: none;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(242, 240, 237, 0.8);
+    z-index: 9999;
+    justify-content: center; align-items: center;
+    backdrop-filter: blur(3px);
+  }
+  .spinner {
+    border: 4px solid var(--border-color);
+    border-top: 4px solid var(--primary-color);
+    border-radius: 50%;
+    width: 40px; height: 40px;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+  /* 登入畫面 */
+  #login-screen {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; height: 85vh;
+  }
+  .login-box {
+    background: var(--white); padding: 40px; border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(102, 100, 100, 0.1); width: 100%; max-width: 320px; text-align: center;
+  }
+  .login-box h2 { margin-top: 0; color: var(--primary-color); letter-spacing: 2px; }
+  .login-box input {
+    width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid var(--border-color);
+    border-radius: 6px; box-sizing: border-box; font-size: 14px; outline: none;
+    color: var(--text-color); background: var(--bg-color);
+  }
+  .login-box button {
+    width: 100%; padding: 12px; background: var(--primary-color); color: var(--white);
+    border: none; border-radius: 6px; font-size: 16px; cursor: pointer; transition: 0.3s;
+  }
+  .login-box button:hover { opacity: 0.85; }
+
+  /* 主系統 */
+  #app-screen { display: none; }
+  
+  /* 頂部導覽列 */
+  .top-nav {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;
+  }
+  .nav-title { font-size: 22px; font-weight: bold; letter-spacing: 1px; color: var(--text-color); }
+  .nav-actions { display: flex; gap: 12px; }
+  
+  .btn-primary { background: var(--primary-color); color: var(--white); border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-size: 14px; transition: 0.2s; }
+  .btn-primary:hover { opacity: 0.85; }
+  
+  .btn-secondary { background: var(--white); color: var(--text-color); border: 1px solid var(--text-color); padding: 10px 20px; border-radius: 20px; cursor: pointer; font-size: 14px; transition: 0.2s; }
+  .btn-secondary:hover { background: var(--text-color); color: var(--white); }
+
+  /* 頁籤 */
+  .tabs-container { display: flex; gap: 15px; margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+  .tab { font-size: 16px; padding: 5px 10px; cursor: pointer; color: #a0a0a0; border-bottom: 2px solid transparent; transition: 0.3s; }
+  .tab.active { color: var(--primary-color); border-bottom-color: var(--primary-color); font-weight: bold; }
+  
+  /* 12個月網格 */
+  .month-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 30px; }
+  .month-btn {
+    background: var(--white); border: 1px solid var(--border-color); color: var(--text-color);
+    padding: 12px 0; border-radius: 8px; text-align: center; cursor: pointer; font-size: 14px; transition: 0.2s;
+  }
+  .month-btn.has-items { background: #e0f2f7; color: var(--primary-color); border-color: var(--primary-color); font-weight: bold; }
+  .month-btn.active-view { background: var(--primary-color); color: var(--white); border-color: var(--primary-color); }
+
+  /* 清單列表設計 */
+  .list-section { background: var(--white); border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(102, 100, 100, 0.05); }
+  .list-header-title { font-size: 18px; font-weight: bold; margin-top: 0; margin-bottom: 20px; border-left: 4px solid var(--primary-color); padding-left: 10px; }
+  
+  .search-bar { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid var(--border-color); border-radius: 8px; box-sizing: border-box; background: var(--bg-color); color: var(--text-color); outline: none; display: none; }
+
+  .empty-state { text-align: center; color: #a0a0a0; padding: 40px 0; font-size: 14px; }
+  
+  .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border-color); }
+  .list-item:last-child { border-bottom: none; }
+  
+  .item-content { flex: 1; display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  .item-date { width: 90px; font-size: 13px; color: #a0a0a0; }
+  .item-room { width: 60px; font-weight: bold; color: var(--primary-color); }
+  .item-main { flex: 2; min-width: 150px; }
+  .item-name { font-size: 15px; font-weight: bold; margin-bottom: 4px; }
+  .item-desc { font-size: 12px; color: #a0a0a0; }
+  .item-meta { flex: 1; font-size: 12px; color: #a0a0a0; text-align: right; margin-right: 15px; }
+
+  /* 彈出視窗 Modal */
+  .modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(102, 100, 100, 0.5); justify-content: center; align-items: center; z-index: 1000;
+  }
+  .modal { background: var(--white); padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+  .modal h3 { margin-top: 0; color: var(--primary-color); margin-bottom: 20px; }
+  .modal-row { margin-bottom: 15px; }
+  .modal-row label { display: block; font-size: 13px; margin-bottom: 5px; color: var(--text-color); }
+  .modal-row input { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; background: var(--bg-color); color: var(--text-color); }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
+
+  /* 響應式調整 */
+  @media(max-width: 600px) {
+    .month-grid { grid-template-columns: repeat(4, 1fr); }
+    .top-nav { flex-direction: column; gap: 15px; align-items: flex-start; }
+    .item-content { flex-direction: column; gap: 5px; align-items: flex-start; }
+    .item-meta { text-align: left; margin-top: 5px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 載入中遮罩 -->
+<div id="loading-overlay">
+  <div class="spinner"></div>
+</div>
+
+<div class="container">
+  <!-- 登入畫面 -->
+  <div id="login-screen">
+    <div class="login-box">
+      <h2>BOUTIQUE L&F</h2>
+      <input type="text" id="username" placeholder="管理員帳號">
+      <input type="password" id="password" placeholder="密碼">
+      <button onclick="login()">登入系統</button>
+    </div>
+  </div>
+
+  <!-- 主系統 -->
+  <div id="app-screen">
+    <div class="top-nav">
+      <div class="nav-title">遺留物管理系統</div>
+      <div class="nav-actions">
+        <button class="btn-primary" onclick="openAddModal()">➕ 新增物品</button>
+        <button class="btn-secondary" onclick="switchView('刪除區')">🗑️ 刪除區紀錄</button>
+        <button class="btn-secondary" style="border: none;" onclick="location.reload()">登出</button>
+      </div>
+    </div>
+
+    <!-- 頁籤區 (不含刪除區) -->
+    <div class="tabs-container" id="main-tabs">
+      <div class="tab active" id="tab-valuable" onclick="switchView('保險箱')">保險箱 (0)</div>
+      <div class="tab" id="tab-soon" onclick="switchView('保留區')">保留區 (0)</div>
+    </div>
+
+    <!-- 月份網格 -->
+    <div class="month-grid" id="month-grid"></div>
+
+    <!-- 清單顯示區 -->
+    <div class="list-section">
+      <h3 class="list-header-title" id="list-header">讀取中...</h3>
+      <input type="text" id="search-input" class="search-bar" placeholder="🔍 搜尋日期、房號、物品名稱..." oninput="renderItems()">
+      <div id="item-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 新增物品 Modal -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <h3>新增遺留物</h3>
+    <div class="modal-row">
+      <label>存放區域</label>
+      <select id="add-type" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color);">
+        <option value="保險箱">保險箱</option>
+        <option value="保留區">保留區</option>
+      </select>
+    </div>
+    <div class="modal-row">
+      <label>拾獲日期</label>
+      <input type="date" id="add-date">
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <div class="modal-row" style="flex:1;"><label>房號</label><input type="text" id="add-room"></div>
+      <div class="modal-row" style="flex:2;"><label>物品名稱</label><input type="text" id="add-name"></div>
+    </div>
+    <div class="modal-row"><label>拾獲人 (選填)</label><input type="text" id="add-finder"></div>
+    <div class="modal-row"><label>備註 (選填)</label><input type="text" id="add-notes"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" style="border:none;" onclick="closeModal('add-modal')">取消</button>
+      <button class="btn-primary" onclick="submitAdd()">確定新增</button>
+    </div>
+  </div>
+</div>
+
+<!-- 取出/刪除 Modal -->
+<div class="modal-overlay" id="retrieve-modal">
+  <div class="modal">
+    <h3>物品處理</h3>
+    <p style="font-size: 14px; margin-bottom: 20px;">請選擇此物品的處理方式，處理後紀錄將移至刪除區。</p>
+    <div style="display: flex; gap: 15px; margin-bottom: 10px;">
+      <button class="btn-primary" style="flex:1;" onclick="submitRetrieve('客人取走')">客人取走</button>
+      <button class="btn-secondary" style="flex:1; background: var(--bg-color);" onclick="submitRetrieve('逾期整理')">逾期整理</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" style="border:none;" onclick="closeModal('retrieve-modal')">取消</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ==========================================
+  // ⚠️ 請填入部署 Apps Script 獲得的 API 網址
+  const API_URL = "https://script.google.com/macros/s/你的部署ID/exec";
+  // ==========================================
+
+  let currentView = "保險箱";
+  let currentMonth = new Date().getMonth() + 1;
+  let targetRetrieveId = null;
+  
+  // 存放從 GAS 撈回來的資料
+  let appData = { valuable: [], soon: [], deleted: [] };
+
+  // 顯示/隱藏載入中
+  function showLoader() { document.getElementById("loading-overlay").style.display = "flex"; }
+  function hideLoader() { document.getElementById("loading-overlay").style.display = "none"; }
+
+  // 1. 登入
+  async function login() {
+    const u = document.getElementById("username").value;
+    const p = document.getElementById("password").value;
+    if(!u || !p) return alert("請輸入帳號密碼");
+    
+    showLoader();
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "login", username: u, password: p })
+      }).then(r => r.json());
+
+      if(res.success) {
+        document.getElementById("login-screen").style.display = "none";
+        document.getElementById("app-screen").style.display = "block";
+        fetchData();
+      } else {
+        alert(res.message);
+        hideLoader();
+      }
+    } catch(e) {
+      alert("連線失敗，請檢查 API 網址設定。");
+      hideLoader();
+    }
+  }
+
+  // 2. 獲取資料
+  async function fetchData() {
+    showLoader();
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "getData" })
+      }).then(r => r.json());
+      
+      if(res.success) {
+        appData.valuable = res.data.valuable || [];
+        appData.soon = res.data.soon || [];
+        appData.deleted = res.data.deleted || [];
+        updateUI();
+      }
+    } catch(e) {
+      alert("讀取資料失敗");
+    }
+    hideLoader();
+  }
+
+  // 3. 更新介面
+  function updateUI() {
+    // 更新頁籤數量
+    document.getElementById("tab-valuable").innerText = `保險箱 (${appData.valuable.length})`;
+    document.getElementById("tab-soon").innerText = `保留區 (${appData.soon.length})`;
+    
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    
+    if (currentView === "刪除區") {
+      document.getElementById("main-tabs").style.display = "none";
+      document.getElementById("month-grid").style.display = "none";
+      document.getElementById("search-input").style.display = "block";
+      document.getElementById("list-header").innerText = `所有刪除/歷史紀錄 (共 ${appData.deleted.length} 件)`;
+    } else {
+      document.getElementById("main-tabs").style.display = "flex";
+      document.getElementById("month-grid").style.display = "grid";
+      document.getElementById("search-input").style.display = "none";
+      
+      const el = document.getElementById(currentView === "保險箱" ? "tab-valuable" : "tab-soon");
+      if(el) el.classList.add("active");
+      
+      renderMonths();
+    }
+    renderItems();
+  }
+
+  // 切換視圖
+  function switchView(view) {
+    currentView = view;
+    if(view !== "刪除區") document.getElementById("search-input").value = "";
+    updateUI();
+  }
+
+  // 繪製月份
+  function renderMonths() {
+    const grid = document.getElementById("month-grid");
+    grid.innerHTML = "";
+    const sourceData = currentView === "保險箱" ? appData.valuable : appData.soon;
+
+    for(let i=1; i<=12; i++) {
+      const count = sourceData.filter(d => d['月份'] == i).length;
+      const btn = document.createElement("div");
+      btn.className = `month-btn ${count > 0 ? 'has-items' : ''} ${currentMonth === i ? 'active-view' : ''}`;
+      btn.innerText = count > 0 ? `${i}月 (${count})` : `${i}月`;
+      btn.onclick = () => { currentMonth = i; updateUI(); };
+      grid.appendChild(btn);
+    }
+  }
+
+  // 繪製清單列表
+  function renderItems() {
+    const listDiv = document.getElementById("item-list");
+    listDiv.innerHTML = "";
+    
+    let displayData = [];
+    
+    if (currentView === "刪除區") {
+      displayData = [...appData.deleted];
+      const keyword = document.getElementById("search-input").value.toLowerCase();
+      if(keyword) {
+        displayData = displayData.filter(item => 
+          (item['日期']||"").includes(keyword) || 
+          (item['房號']||"").toLowerCase().includes(keyword) || 
+          (item['物品名稱']||"").toLowerCase().includes(keyword)
+        );
+      }
+    } else {
+      const source = currentView === "保險箱" ? appData.valuable : appData.soon;
+      displayData = source.filter(d => d['月份'] == currentMonth);
+      document.getElementById("list-header").innerText = `${currentMonth}月份 ${currentView}清單 (共 ${displayData.length} 件)`;
+    }
+
+    // 日期排序 (越早越上)
+    displayData.sort((a, b) => new Date(a['日期']) - new Date(b['日期']));
+
+    if (displayData.length === 0) {
+      listDiv.innerHTML = `<div class="empty-state">此條件下沒有任何紀錄。</div>`;
+      return;
+    }
+
+    displayData.forEach(item => {
+      const row = document.createElement("div");
+      row.className = "list-item";
+      
+      if (currentView === "刪除區") {
+        row.innerHTML = `
+          <div class="item-content">
+            <div class="item-date">${item['日期']}</div>
+            <div class="item-room">${item['房號']}</div>
+            <div class="item-main">
+              <div class="item-name">${item['物品名稱']}</div>
+              <div class="item-desc">原區: ${item['原區域']} | ${item['狀態']} | 拾獲: ${item['拾獲人']||'無'}</div>
+            </div>
+            <div class="item-meta">處理時間<br>${item['處理時間']}</div>
+          </div>
+        `;
+      } else {
+        row.innerHTML = `
+          <div class="item-content">
+            <div class="item-date">${item['日期']}</div>
+            <div class="item-room">${item['房號']}</div>
+            <div class="item-main">
+              <div class="item-name">${item['物品名稱']}</div>
+              <div class="item-desc">拾獲: ${item['拾獲人']||'無'} | 備註: ${item['備註']||'無'}</div>
+            </div>
+          </div>
+          <button class="btn-secondary" style="margin-left: 15px;" onclick="openRetrieveModal('${item['ID']}')">取出</button>
+        `;
+      }
+      listDiv.appendChild(row);
+    });
+  }
+
+  // 4. Modal 控制
+  function openAddModal() {
+    document.getElementById("add-date").value = new Date().toISOString().split('T')[0];
+    document.getElementById("add-type").value = currentView === "刪除區" ? "保險箱" : currentView;
+    document.getElementById("add-room").value = "";
+    document.getElementById("add-name").value = "";
+    document.getElementById("add-finder").value = "";
+    document.getElementById("add-notes").value = "";
+    document.getElementById("add-modal").style.display = "flex";
+  }
+  
+  function openRetrieveModal(id) {
+    targetRetrieveId = id;
+    document.getElementById("retrieve-modal").style.display = "flex";
+  }
+  
+  function closeModal(id) {
+    document.getElementById(id).style.display = "none";
+  }
+
+  // 5. 新增寫入 API
+  async function submitAdd() {
+    const tab = document.getElementById("add-type").value;
+    const date = document.getElementById("add-date").value;
+    const room = document.getElementById("add-room").value;
+    const name = document.getElementById("add-name").value;
+    const finder = document.getElementById("add-finder").value;
+    const notes = document.getElementById("add-notes").value;
+
+    if(!date || !room || !name) return alert("日期、房號與物品名稱為必填");
+    
+    closeModal('add-modal');
+    showLoader();
+    
+    const month = parseInt(date.split("-")[1]); // 自動擷取月份
+    
+    await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "addItem", tab: tab, date: date, month: month, 
+        room: room, itemName: name, finder: finder, notes: notes
+      })
+    });
+    
+    if(currentView !== "刪除區") currentView = tab;
+    currentMonth = month;
+    fetchData(); // 重新拉取
+  }
+
+  // 6. 刪除/取出 API
+  async function submitRetrieve(type) {
+    closeModal('retrieve-modal');
+    showLoader();
+    
+    await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "deleteItem", tab: currentView, id: targetRetrieveId, retrieveType: type
+      })
+    });
+    
+    fetchData(); // 重新拉取
+  }
+</script>
+</body>
+</html>
