@@ -694,54 +694,56 @@
             setTimeout(() => { ui.addModal.classList.add('hidden'); }, 250);
         }
 
-        // --- 樂觀更新：秒加物品 ---
-        async function submitAddItem() {
-            const cat = document.getElementById('add-category').value;
-            const dateVal = document.getElementById('add-date').value;
-            const room = document.getElementById('add-room').value.trim();
-            const name = document.getElementById('add-name').value.trim();
-            const finder = document.getElementById('add-finder').value.trim();
-            const note = document.getElementById('add-note').value.trim();
+        // --- 樂觀更新：秒加物品 (修正 ID 同步問題) ---
+async function submitAddItem() {
+    const cat = document.getElementById('add-category').value;
+    const dateVal = document.getElementById('add-date').value;
+    const room = document.getElementById('add-room').value.trim();
+    const name = document.getElementById('add-name').value.trim();
+    const finder = document.getElementById('add-finder').value.trim();
+    const note = document.getElementById('add-note').value.trim();
 
-            if (!dateVal || !room || !name) {
-                return showToast('請填寫日期、房號與物品名稱', 'error');
-            }
+    if (!dateVal || !room || !name) {
+        return showToast('請填寫日期、房號與物品名稱', 'error');
+    }
 
-            const parsedMonth = parseInt(dateVal.split('-')[1], 10);
-            const mappedTab = cat === 'safe' ? '保險箱' : '保留區';
+    const parsedMonth = parseInt(dateVal.split('-')[1], 10);
+    const mappedTab = cat === 'safe' ? '保險箱' : '保留區';
 
-            // 1. 瞬間塞入本地記憶體並重繪
-            const tempId = 'temp_' + Date.now().toString();
-            dbItems.push({
-                id: tempId, category: cat, date: dateVal, month: parsedMonth,
-                room: room, name: name, finder: finder, note: note,
-                status: 'active', addedBy: currentUser
-            });
-            
-            closeAddModal();
-            showToast(`✅ 已新增：Rm ${room} ${name} (背景同步中...)`, 'success');
-            
-            currentTab = cat;
-            currentMonth = parsedMonth;
-            ui.btnDeletedZone.classList.remove('bg-custom-dark', 'text-white');
-            ui.btnDeletedZone.classList.add('bg-custom-base', 'text-custom-dark');
-            renderView(); 
+    // 🔴 關鍵修正：前端直接產生唯一 ID，前後端就不會打架了
+    const newItemId = 'ID_' + Date.now().toString() + '_' + Math.floor(Math.random()*1000);
+    
+    // 1. 瞬間塞入本地記憶體並重繪
+    dbItems.push({
+        id: newItemId, category: cat, date: dateVal, month: parsedMonth,
+        room: room, name: name, finder: finder, note: note,
+        status: 'active', addedBy: currentUser // 確實填入當下操作的帳號
+    });
+    
+    closeAddModal();
+    showToast(`✅ 已新增：Rm ${room} ${name} (同步中...)`, 'success');
+    
+    currentTab = cat;
+    currentMonth = parsedMonth;
+    ui.btnDeletedZone.classList.remove('bg-custom-dark', 'text-white');
+    ui.btnDeletedZone.classList.add('bg-custom-base', 'text-custom-dark');
+    renderView(); 
 
-            // 2. 背景發送給 Google 試算表
-            try {
-                await fetch(API_URL, {
-                    method: "POST",
-                    body: JSON.stringify({
-                        action: "addItem", tab: mappedTab, date: dateVal, month: parsedMonth,
-                        room: room, itemName: name, finder: finder, notes: note,
-                        username: currentUser, password: currentPassword
-                    })
-                });
-                loadDataBackground(); // 同步回最新 ID
-            } catch(e) {
-                showToast("⚠️ 背景同步失敗，請檢查網路連線", "error");
-            }
-        }
+    // 2. 背景發送給 Google 試算表 (一併送出前端產生的 ID)
+    try {
+        await fetch(API_URL, {
+            method: "POST",
+            body: JSON.stringify({
+                action: "addItem", tab: mappedTab, id: newItemId, date: dateVal, month: parsedMonth,
+                room: room, itemName: name, finder: finder, notes: note,
+                username: currentUser, password: currentPassword
+            })
+        });
+        loadDataBackground(); 
+    } catch(e) {
+        showToast("⚠️ 背景同步失敗，請檢查網路連線", "error");
+    }
+}
 
         function openRetrieveModal(id) {
             const item = dbItems.find(i => i.id === id);
