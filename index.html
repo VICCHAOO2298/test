@@ -676,50 +676,106 @@
         }
 
         async function submitAddItem() {
-            const cat = document.getElementById('add-category').value;
-            const dateVal = document.getElementById('add-date').value;
-            const room = document.getElementById('add-room').value.trim();
-            const name = document.getElementById('add-name').value.trim();
-            const finder = document.getElementById('add-finder').value.trim();
-            const note = document.getElementById('add-note').value.trim();
+    const cat = document.getElementById('add-category').value;
+    const dateVal = document.getElementById('add-date').value;
+    const room = document.getElementById('add-room').value.trim();
+    const name = document.getElementById('add-name').value.trim();
+    const finder = document.getElementById('add-finder').value.trim();
+    const note = document.getElementById('add-note').value.trim();
 
-            if (!dateVal || !room || !name) {
-                showToast('請填寫日期、房號與物品名稱', 'error');
-                return;
-            }
+    if (!dateVal || !room || !name) {
+        showToast('請填寫日期、房號與物品名稱', 'error');
+        return;
+    }
 
-            const parsedMonth = parseInt(dateVal.split('-')[1], 10);
-            const mappedTab = cat === 'safe' ? '保險箱' : '保留區';
+    const parsedMonth = parseInt(dateVal.split('-')[1], 10);
+    const mappedTab = cat === 'safe' ? '保險箱' : '保留區';
 
-            toggleLoader(true);
-            try {
-                await fetch(API_URL, {
-                    method: "POST",
-                    body: JSON.stringify({
-                        action: "addItem", tab: mappedTab, date: dateVal, month: parsedMonth,
-                        room: room, itemName: name, finder: finder, notes: note
-                    })
+    // ⚡ 第一步：不顯示載入圈圈，直接把資料塞進網頁記憶體並重繪畫面
+    const tempId = Date.now().toString(); // 產生暫時ID
+    dbItems.push({
+        id: tempId, category: cat, date: dateVal, month: parsedMonth,
+        room: room, name: name, finder: finder, note: note,
+        status: 'active', addedBy: currentUser
+    });
+    
+    closeAddModal();
+    showToast(`✅ 已新增：Rm ${room} ${name} (背景同步中...)`, 'success');
+    
+    // 讓畫面瞬間跳到新增的那個月份
+    currentTab = cat;
+    currentMonth = parsedMonth;
+    ui.btnDeletedZone.classList.remove('bg-custom-dark', 'text-white');
+    ui.btnDeletedZone.classList.add('bg-custom-base', 'text-custom-dark');
+    renderView(); 
+
+    // ☁️ 第二步：在背景默默將資料傳給 Google 試算表
+    try {
+        await fetch(API_URL, {
+            method: "POST",
+            body: JSON.stringify({
+                action: "addItem", tab: mappedTab, date: dateVal, month: parsedMonth,
+                room: room, itemName: name, finder: finder, notes: note,
+                username: currentUser, password: currentPassword
+            })
+        });
+        // 寫入成功後，在背景偷偷拉取最新資料，確保與其他同事同步
+        loadDataBackground();
+    } catch(e) {
+        showToast("⚠️ 背景同步失敗，請檢查網路連線", "error");
+    }
+}
+
+
+        sync function loadDataBackground() {
+    // 這個函數跟 loadData 一樣，差別在於它『不會叫出遮罩轉圈圈』
+    try {
+        const res = await fetch(API_URL, {
+            method: "POST",
+            body: JSON.stringify({ action: "getData", username: currentUser, password: currentPassword }) 
+        }).then(r => r.json());
+        
+        if(res.success) {
+            dbItems = [];
+            (res.data.valuable || []).forEach(d => {
+                dbItems.push({
+                    id: d['ID'], category: 'safe', date: d['日期'], month: parseInt(d['月份']),
+                    room: d['房號'], name: d['物品名稱'], finder: d['拾獲人'], note: d['備註'],
+                    status: 'active', addedBy: d['建立者'] || '系統'
                 });
-                
-                await loadData();
-                closeAddModal();
-                showToast(`成功新增：Rm ${room} ${name}`, 'success');
-                
-                currentTab = cat;
-                currentMonth = parsedMonth;
-                ui.btnDeletedZone.classList.remove('bg-custom-dark', 'text-white');
-                ui.btnDeletedZone.classList.add('bg-custom-base', 'text-custom-dark');
-                
-                const targetTabBtn = document.querySelector(`[data-tab="${cat}"]`);
-                if(targetTabBtn) targetTabBtn.click();
-                else renderView();
-
-            } catch(e) {
-                showToast("新增失敗，請重試", "error");
-            }
-            toggleLoader(false);
+            });
+            (res.data.soon || []).forEach(d => {
+                dbItems.push({
+                    id: d['ID'], category: 'retention', date: d['日期'], month: parseInt(d['月份']),
+                    room: d['房號'], name: d['物品名稱'], finder: d['拾獲人'], note: d['備註'],
+                    status: 'active', addedBy: d['建立者'] || '系統'
+                });
+            });
+            (res.data.deleted || []).forEach(d => {
+                dbItems.push({
+                    id: d['ID'], category: d['原區域'] === '保險箱' ? 'safe' : 'retention',
+                    date: d['日期'], month: parseInt(d['月份']), room: d['房號'],
+                    name: d['物品名稱'], finder: d['拾獲人'], note: d['備註'], status: 'deleted', 
+                    deleteReason: d['狀態'] === '客人取走' ? 'guest' : 'expired',
+                    deletedBy: d['處理人'] || '系統', deletedAtStr: d['處理時間']
+                });
+            });
+            // 資料拉完後默默刷新畫面數字與列表，使用者完全無感
+            renderView();
         }
+    } catch (e) {
+        console.log("背景同步失敗", e);
+    }
+}
 
+// ⏱️ 設定定時器：每 5 分鐘自動在背景同步一次資料 (避免其他同事更新了你看不到)
+setInterval(() => {
+    if (currentUser) {
+        loadDataBackground();
+    }
+}, 5 * 60 * 1000);
+
+        
         function openRetrieveModal(id) {
             const item = dbItems.find(i => i.id === id);
             if (!item) return;
@@ -745,33 +801,43 @@
         }
 
         async function executeRetrieve(reason) {
-            if (!itemToRetrieve) return;
-            const item = dbItems.find(i => i.id === itemToRetrieve);
-            
-            if (item) {
-                toggleLoader(true);
-                const mappedTab = item.category === 'safe' ? '保險箱' : '保留區';
-                const mappedReason = reason === 'guest' ? '客人取走' : '逾期整理';
+    if (!itemToRetrieve) return;
+    const item = dbItems.find(i => i.id === itemToRetrieve);
+    
+    if (item) {
+        const mappedTab = item.category === 'safe' ? '保險箱' : '保留區';
+        const mappedReason = reason === 'guest' ? '客人取走' : '逾期整理';
 
-                try {
-                    await fetch(API_URL, {
-                        method: "POST",
-                        body: JSON.stringify({
-                            action: "deleteItem", tab: mappedTab, id: item.id, retrieveType: mappedReason
-                        })
-                    });
-                    
-                    const msg = reason === 'guest' ? '紀錄更新：客人已取走' : '紀錄更新：已逾期整理';
-                    showToast(msg, 'success');
-                    await loadData();
+        // ⚡ 第一步：瞬間在網頁端把物品標示為刪除/取出
+        item.status = 'deleted';
+        item.deleteReason = reason;
+        item.deletedBy = currentUser;
+        
+        const now = new Date();
+        item.deletedAtStr = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        
+        closeRetrieveModal();
+        const msg = reason === 'guest' ? '✅ 客人已取走 (背景同步中...)' : '✅ 已逾期整理 (背景同步中...)';
+        showToast(msg, 'success');
+        renderView(); // 瞬間重繪畫面，物品立刻消失跑到刪除區
 
-                } catch(e) {
-                    showToast("更新失敗，請重試", "error");
-                }
-                toggleLoader(false);
-            }
-            closeRetrieveModal();
+        // ☁️ 第二步：背景默默通知 Google 試算表
+        try {
+            await fetch(API_URL, {
+                method: "POST",
+                body: JSON.stringify({
+                    action: "deleteItem", tab: mappedTab, id: item.id, retrieveType: mappedReason,
+                    username: currentUser, password: currentPassword
+                })
+            });
+            loadDataBackground(); // 同步回最新狀態
+        } catch(e) {
+            showToast("⚠️ 更新失敗，請檢查網路", "error");
         }
+    } else {
+        closeRetrieveModal();
+    }
+}
 
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
