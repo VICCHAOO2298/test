@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>重要及暫存遺留物登記系統</title>
+    <title>遺留物管理中心 | Boutique Lost & Found</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -51,7 +51,7 @@
                 <div class="w-14 h-14 bg-custom-base rounded-full flex items-center justify-center mx-auto mb-4 border border-custom-dark/5">
                     <i class="fas fa-box-open text-xl text-custom-accent"></i>
                 </div>
-                <h1 class="text-xl font-bold text-custom-dark tracking-wide">重要及暫存遺留物登記系統</h1>
+                <h1 class="text-xl font-bold text-custom-dark tracking-wide">遺留物管理系統</h1>
             </div>
             <form id="login-form" class="space-y-4">
                 <input type="text" id="username" required autocomplete="off" class="w-full bg-custom-base/30 border border-custom-dark/20 px-4 py-3 rounded-lg text-center text-sm" placeholder="請輸入帳號">
@@ -68,11 +68,11 @@
                 <div class="flex justify-between h-16 items-center">
                     <div class="flex items-center gap-3">
                         <i class="fas fa-box-open text-custom-accent text-lg"></i>
-                        <h1 class="font-bold text-base md:text-lg tracking-wide whitespace-nowrap">重要及暫存遺留物登記系統</h1>
+                        <h1 class="font-bold text-base md:text-lg tracking-wide whitespace-nowrap">遺留物管理</h1>
                     </div>
                     <div class="flex items-center gap-2 md:gap-4">
                         <button onclick="openAddModal()" class="bg-custom-accent hover:opacity-90 text-white px-3 py-2 md:px-4 rounded-lg text-sm font-bold flex items-center gap-2"><i class="fas fa-plus"></i> <span class="hidden md:inline">新增物品</span></button>
-                        <button onclick="switchToDeletedZone()" id="btn-deleted-zone" class="bg-custom-base hover:bg-custom-dark hover:text-white text-custom-dark px-3 py-2 md:px-4 border border-custom-dark/10 rounded-lg text-sm font-bold flex items-center gap-2"><i class="fas fa-archive"></i> <span class="hidden md:inline">留存紀錄</span></button>
+                        <button onclick="switchToDeletedZone()" id="btn-deleted-zone" class="bg-custom-base hover:bg-custom-dark hover:text-white text-custom-dark px-3 py-2 md:px-4 border border-custom-dark/10 rounded-lg text-sm font-bold flex items-center gap-2"><i class="fas fa-archive"></i> <span class="hidden md:inline">刪除區紀錄</span></button>
                         <div class="h-6 w-px bg-custom-dark/10 mx-1 md:mx-2 hidden sm:block"></div>
                         <div class="text-sm items-center gap-2 px-2 py-1 hidden sm:flex"><i class="fas fa-user-circle text-custom-accent/70 text-lg"></i> <span id="display-username" class="font-medium"></span></div>
                         <button onclick="handleLogout()" class="text-custom-dark/50 hover:text-custom-dark p-2"><i class="fas fa-sign-out-alt"></i></button>
@@ -427,7 +427,7 @@
                 "<div class='flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-6 min-w-0'>" +
                     "<div class='flex items-center md:w-28 shrink-0'><span class='text-xs font-bold text-custom-dark/50 tracking-wider'>" + item.date + "</span></div>" +
                     "<div class='flex flex-col min-w-0 flex-1'>" +
-                        "<div class='flex items-center gap-3'><span class='font-bold text-lg whitespace-nowrap'>item.room + "</span><h4 class='font-bold text-custom-dark/90 text-base truncate'>" + item.name + "</h4></div>" +
+                        "<div class='flex items-center gap-3'><span class='font-bold text-lg whitespace-nowrap'>Rm " + item.room + "</span><h4 class='font-bold text-custom-dark/90 text-base truncate'>" + item.name + "</h4></div>" +
                         "<div class='flex items-center gap-4 mt-1.5 text-[11px] text-custom-dark/60 flex-wrap'>" + ownerBadge + finderBadge + noteBadge + editBadge + "</div>" +
                     "</div>" +
                 "</div>" +
@@ -452,7 +452,7 @@
                 "<div class='flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-6 min-w-0'>" +
                     "<div class='flex items-center gap-2 md:w-28 shrink-0'><span class='text-[10px] px-1.5 py-0.5 bg-custom-base text-custom-dark/60 rounded font-bold'>" + catName + "</span><span class='text-[11px] font-bold text-custom-dark/30 line-through'>" + item.date + "</span></div>" +
                     "<div class='flex flex-col min-w-0 flex-1'>" +
-                        "<div class='flex items-center gap-3'><span class='font-bold text-custom-dark/40 text-lg line-through'>item.room + "</span><h4 class='font-bold text-custom-dark/40 text-base truncate line-through'>" + item.name + "</h4><div class='ml-2 text-[11px]'>" + badge + "</div></div>" +
+                        "<div class='flex items-center gap-3'><span class='font-bold text-custom-dark/40 text-lg line-through'>Rm " + item.room + "</span><h4 class='font-bold text-custom-dark/40 text-base truncate line-through'>" + item.name + "</h4><div class='ml-2 text-[11px]'>" + badge + "</div></div>" +
                         "<div class='flex items-center gap-4 mt-1.5 text-[11px] text-custom-dark/40 flex-wrap'>" + ownerText + editBadge + "</div>" +
                     "</div>" +
                 "</div>" +
@@ -586,7 +586,7 @@
                 closeItemModal(); currentTab = v.cat; currentMonth = pMonth;
                 ui.btnDeletedZone.classList.replace('bg-custom-dark', 'bg-custom-base');
                 ui.btnDeletedZone.classList.replace('text-white', 'text-custom-dark');
-                renderView(); showToast("✅ 已新增：v.room + " " + v.name, 'success');
+                renderView(); showToast("✅ 已新增：Rm " + v.room + " " + v.name, 'success');
                 
                 try {
                     await fetch(API_URL, {
