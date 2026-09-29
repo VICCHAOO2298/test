@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>遺留物管理中心 | Boutique Lost & Found</title>
+    <title>遺留物管理中心</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -53,7 +53,6 @@
                 </div>
                 <h1 class="text-xl font-bold text-custom-dark tracking-wide">遺留物管理系統</h1>
             </div>
-            <!-- 修改點：直接將表單送出綁定到函數，避免監聽器失效 -->
             <form id="login-form" class="space-y-4" onsubmit="event.preventDefault(); submitLogin();">
                 <input type="text" id="username" required autocomplete="off" class="w-full bg-custom-base/30 border border-custom-dark/20 px-4 py-3 rounded-lg text-center text-sm" placeholder="請輸入帳號">
                 <input type="password" id="password" required autocomplete="off" class="w-full bg-custom-base/30 border border-custom-dark/20 px-4 py-3 rounded-lg text-center text-sm" placeholder="請輸入密碼">
@@ -258,7 +257,6 @@
                 showLogin(); 
             }
 
-            // 設定背景同步
             setInterval(function() { 
                 if (currentUser) loadDataBackground(); 
             }, 3 * 60 * 1000);
@@ -268,7 +266,6 @@
             if(el('loading-overlay')) el('loading-overlay').style.display = show ? 'flex' : 'none'; 
         }
 
-        // --- 登入功能 ---
         async function submitLogin() {
             const u = el('username').value.trim(); 
             const p = el('password').value.trim();
@@ -300,7 +297,6 @@
             toggleLoader(false);
         }
 
-        // --- 資料讀取 ---
         async function loadData() {
             toggleLoader(true);
             try {
@@ -360,7 +356,6 @@
             });
         }
 
-        // --- 介面切換 ---
         function handleLogout() {
             currentUser = ''; currentPassword = '';
             try { localStorage.removeItem('boutique_lf_user_v15'); localStorage.removeItem('boutique_lf_pass_v15'); } catch(e){}
@@ -507,7 +502,9 @@
             }
         }
 
-        // --- HTML 產出 ---
+        // ==========================================
+        // 核心對齊設定區塊
+        // ==========================================
         function createActiveRowHTML(item) {
             let ownerBadge = "";
             if (item.ownerName || item.ownerPhone) {
@@ -527,7 +524,8 @@
                 "<div class='flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-6 min-w-0'>" +
                     "<div class='flex items-center md:w-28 shrink-0'><span class='text-xs font-bold text-custom-dark/50 tracking-wider'>" + item.date + "</span></div>" +
                     "<div class='flex flex-col min-w-0 flex-1'>" +
-                        "<div class='flex items-center gap-4 sm:gap-6'><span class='font-bold text-lg whitespace-nowrap min-w-[50px]'>" + roomDisplay + "</span><span class='w-px h-5 bg-custom-dark/20'></span><h4 class='font-bold text-custom-dark/90 text-base truncate'>" + item.name + "</h4></div>" +
+                        // 🌟 排版關鍵：w-20 sm:w-24 shrink-0 truncate 確保區域欄位永遠等寬對齊
+                        "<div class='flex items-center gap-4 sm:gap-6'><span class='font-bold text-lg w-20 sm:w-24 shrink-0 truncate'>" + roomDisplay + "</span><span class='w-px h-5 bg-custom-dark/20 shrink-0'></span><h4 class='font-bold text-custom-dark/90 text-base truncate'>" + item.name + "</h4></div>" +
                         "<div class='flex items-center gap-4 mt-1.5 text-[11px] text-custom-dark/60 flex-wrap'>" + ownerBadge + finderBadge + noteBadge + editBadge + "</div>" +
                     "</div>" +
                 "</div>" +
@@ -556,7 +554,8 @@
                 "<div class='flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-6 min-w-0'>" +
                     "<div class='flex items-center gap-2 md:w-28 shrink-0'><span class='text-[10px] px-1.5 py-0.5 bg-custom-base text-custom-dark/60 rounded font-bold'>" + catName + "</span><span class='text-[11px] font-bold text-custom-dark/30 line-through'>" + item.date + "</span></div>" +
                     "<div class='flex flex-col min-w-0 flex-1'>" +
-                        "<div class='flex items-center gap-4 sm:gap-6'><span class='font-bold text-custom-dark/40 text-lg line-through min-w-[50px]'>" + roomDisplay + "</span><span class='w-px h-5 bg-custom-dark/10'></span><h4 class='font-bold text-custom-dark/40 text-base truncate line-through'>" + item.name + "</h4><div class='ml-2 text-[11px]'>" + badge + "</div></div>" +
+                        // 🌟 排版關鍵：w-20 sm:w-24 shrink-0 truncate 確保區域欄位永遠等寬對齊
+                        "<div class='flex items-center gap-4 sm:gap-6'><span class='font-bold text-custom-dark/40 text-lg line-through w-20 sm:w-24 shrink-0 truncate'>" + roomDisplay + "</span><span class='w-px h-5 bg-custom-dark/10 shrink-0'></span><h4 class='font-bold text-custom-dark/40 text-base truncate line-through'>" + item.name + "</h4><div class='ml-2 text-[11px] shrink-0'>" + badge + "</div></div>" +
                         "<div class='flex items-center gap-4 mt-1.5 text-[11px] text-custom-dark/40 flex-wrap'>" + ownerText + editBadge + "</div>" +
                     "</div>" +
                 "</div>" +
