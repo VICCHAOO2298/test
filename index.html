@@ -29,8 +29,8 @@
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(102, 100, 100, 0.15); border-radius: 10px; }
-        .modal-enter { opacity: 0; transfo: scale(0.98) translateY(5px); }
-        .modal-enter-active { opacity: 1; transfo: scale(1) translateY(0); transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+        .modal-enter { opacity: 0; transform: scale(0.98) translateY(5px); }
+        .modal-enter-active { opacity: 1; transform: scale(1) translateY(0); transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
         input:focus, select:focus, textarea:focus { outline: none; border-color: #72c3d7; box-shadow: 0 0 0 2px rgba(114, 195, 215, 0.15); }
     </style>
 </head>
@@ -53,11 +53,11 @@
                 </div>
                 <h1 class="text-xl font-bold text-custom-dark tracking-wide">遺留物管理系統</h1>
             </div>
-            <fo id="login-fo" class="space-y-4">
+            <form id="login-form" class="space-y-4">
                 <input type="text" id="username" required autocomplete="off" class="w-full bg-custom-base/30 border border-custom-dark/20 px-4 py-3 rounded-lg text-center text-sm" placeholder="請輸入帳號">
                 <input type="password" id="password" required autocomplete="off" class="w-full bg-custom-base/30 border border-custom-dark/20 px-4 py-3 rounded-lg text-center text-sm" placeholder="請輸入密碼">
                 <button type="submit" class="w-full bg-custom-accent hover:opacity-90 text-white font-bold py-3 rounded-lg transition-colors mt-2">登入系統</button>
-            </fo>
+            </form>
         </div>
     </div>
 
@@ -149,8 +149,8 @@
                 
                 <div class="grid grid-cols-3 gap-4">
                     <div class="col-span-1">
-                        <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">房號</label>
-                        <input type="text" id="item-room" class="w-full bg-custom-base/50 border border-custom-dark/20 px-3 py-2.5 rounded-lg text-sm">
+                        <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">房號 / 區域</label>
+                        <input type="text" id="item-room" class="w-full bg-custom-base/50 border border-custom-dark/20 px-3 py-2.5 rounded-lg text-sm" placeholder="例: 101 或 大廳">
                     </div>
                     <div class="col-span-2">
                         <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">物品名稱</label>
@@ -160,22 +160,22 @@
 
                 <div class="grid grid-cols-2 gap-4 bg-custom-base/30 p-3.5 rounded-xl border border-custom-dark/10">
                     <div>
-                        <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">失主姓名 <span class="font-noal opacity-60">(選填)</span></label>
+                        <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">失主姓名 <span class="font-normal opacity-60">(選填)</span></label>
                         <input type="text" id="item-owner-name" class="w-full bg-white border border-custom-dark/20 px-3 py-2 rounded-lg text-sm transition-colors focus:bg-white" placeholder="例: 王先生">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">聯絡電話 <span class="font-noal opacity-60">(選填)</span></label>
+                        <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">聯絡電話 <span class="font-normal opacity-60">(選填)</span></label>
                         <input type="text" id="item-owner-phone" class="w-full bg-white border border-custom-dark/20 px-3 py-2 rounded-lg text-sm transition-colors focus:bg-white" placeholder="例: 0912345678">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">拾獲人 <span class="font-noal opacity-60">(選填)</span></label>
+                    <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">拾獲人 <span class="font-normal opacity-60">(選填)</span></label>
                     <input type="text" id="item-finder" class="w-full bg-custom-base/50 border border-custom-dark/20 px-3 py-2.5 rounded-lg text-sm">
                 </div>
                 
                 <div>
-                    <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">備註事項 <span class="font-noal opacity-60">(選填)</span></label>
+                    <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">備註事項 <span class="font-normal opacity-60">(選填)</span></label>
                     <textarea id="item-note" rows="2" class="w-full bg-custom-base/50 border border-custom-dark/20 px-3 py-2.5 rounded-lg text-sm resize-none"></textarea>
                 </div>
             </div>
@@ -187,7 +187,7 @@
         </div>
     </div>
 
-    <!-- 🌟 全新：歷史紀錄查看 Modal -->
+    <!-- 歷史紀錄查看 Modal -->
     <div id="history-modal" class="hidden fixed inset-0 bg-custom-dark/20 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col border border-custom-dark/10">
             <div class="px-6 py-5 flex justify-between items-center shrink-0 border-b border-custom-base">
@@ -204,13 +204,13 @@
 
     <!-- 取出 Modal -->
     <div id="retrieve-modal" class="hidden fixed inset-0 bg-custom-dark/20 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden transfo transition-transfo scale-95 opacity-0 border border-custom-dark/5" id="retrieve-modal-content">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden transform transition-transform scale-95 opacity-0 border border-custom-dark/5" id="retrieve-modal-content">
             <div class="p-8 text-center relative">
                 <button onclick="closeRetrieveModal()" class="absolute top-4 right-4 text-custom-dark/40 hover:bg-custom-base hover:text-custom-dark w-8 h-8 rounded-full"><i class="fas fa-times"></i></button>
                 <div class="w-12 h-12 bg-custom-accent/10 rounded-full flex items-center justify-center mx-auto mb-4 text-custom-accent text-xl"><i class="fas fa-hand-holding"></i></div>
                 <h3 class="text-lg font-bold mb-1">物品取出作業</h3>
                 <p class="text-custom-dark/60 text-sm mb-6 bg-custom-base/50 p-2 rounded-lg mt-3">
-                    房號 <span id="retrieve-room" class="font-bold text-custom-dark mx-1"></span><br><span id="retrieve-name" class="font-bold text-custom-dark text-base mt-1 inline-block"></span>
+                    區域 <span id="retrieve-room" class="font-bold text-custom-dark mx-1"></span><br><span id="retrieve-name" class="font-bold text-custom-dark text-base mt-1 inline-block"></span>
                 </p>
                 <div class="flex flex-col gap-3">
                     <button onclick="executeRetrieve('guest')" class="w-full bg-white border-2 border-custom-accent text-custom-accent hover:bg-custom-accent hover:text-white py-3 rounded-xl font-bold text-sm flex justify-center items-center gap-2"><i class="fas fa-user-check"></i> 客人取走</button>
@@ -233,11 +233,11 @@
         const ui = {};
 
         document.addEventListener('DOMContentLoaded', () => {
-            try { currentUser = localStorage.getItem('boutique_lf_user_v11') || ''; currentPassword = localStorage.getItem('boutique_lf_pass_v11') || ''; } catch (e) {}
+            try { currentUser = localStorage.getItem('boutique_lf_user_v12') || ''; currentPassword = localStorage.getItem('boutique_lf_pass_v12') || ''; } catch (e) {}
 
             Object.assign(ui, {
                 loadingOverlay: document.getElementById('loading-overlay'), loginScreen: document.getElementById('login-screen'),
-                appScreen: document.getElementById('app-screen'), loginFo: document.getElementById('login-fo'),
+                appScreen: document.getElementById('app-screen'), loginForm: document.getElementById('login-form'),
                 usernameInput: document.getElementById('username'), passwordInput: document.getElementById('password'),
                 displayUsername: document.getElementById('display-username'), tabBtns: document.querySelectorAll('.tab-btn'),
                 btnDeletedZone: document.getElementById('btn-deleted-zone'), countSafe: document.getElementById('count-safe'),
@@ -254,8 +254,8 @@
                 ui.searchInput.addEventListener('input', (e) => { searchQuery = e.target.value.toLowerCase().trim(); renderList(currentTab === 'deleted'); });
             }
 
-            if(ui.loginFo) {
-                ui.loginFo.addEventListener('submit', async (e) => {
+            if(ui.loginForm) {
+                ui.loginForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const u = ui.usernameInput.value.trim(); const p = ui.passwordInput.value.trim();
                     if(!u || !p) return showToast("請輸入完整帳號密碼", "error");
@@ -265,7 +265,7 @@
                         const data = await res.json();
                         if(data.success) {
                             currentUser = data.user; currentPassword = p;
-                            try { localStorage.setItem('boutique_lf_user_v11', currentUser); localStorage.setItem('boutique_lf_pass_v11', currentPassword); } catch(err) {}
+                            try { localStorage.setItem('boutique_lf_user_v12', currentUser); localStorage.setItem('boutique_lf_pass_v12', currentPassword); } catch(err) {}
                             showApp(); loadData(); showToast("登入成功，歡迎 " + currentUser, 'success');
                         } else { showToast(data.message || "登入失敗", 'error'); }
                     } catch(err) { showToast("連線至伺服器失敗，請檢查網路", 'error'); }
@@ -286,6 +286,12 @@
 
             if (currentUser && currentPassword) { showApp(); loadData(); } else { showLogin(); }
         });
+
+        // --- 工具：智慧判斷區域文字 ---
+        function formatRoom(roomText) {
+            if (!roomText) return "";
+            return /^\d/.test(roomText) ? "Rm " + roomText : roomText;
+        }
 
         function toggleLoader(show) { if(ui.loadingOverlay) ui.loadingOverlay.style.display = show ? 'flex' : 'none'; }
 
@@ -331,7 +337,7 @@
 
         function handleLogout() {
             currentUser = ''; currentPassword = '';
-            try { localStorage.removeItem('boutique_lf_user_v11'); localStorage.removeItem('boutique_lf_pass_v11'); } catch(e){}
+            try { localStorage.removeItem('boutique_lf_user_v12'); localStorage.removeItem('boutique_lf_pass_v12'); } catch(e){}
             showLogin();
         }
 
@@ -362,11 +368,11 @@
                 renderList(true);
             } else {
                 ui.interactiveSection.classList.remove('hidden'); ui.searchSection.classList.add('hidden');
-                rendeonthsGrid(); renderList(false);
+                renderMonthsGrid(); renderList(false);
             }
         }
 
-        function rendeonthsGrid() {
+        function renderMonthsGrid() {
             ui.monthsGrid.innerHTML = '';
             for (let i = 1; i <= 12; i++) {
                 const has = dbItems.some(item => item.status === 'active' && item.category === currentTab && item.month === i);
@@ -397,7 +403,7 @@
             else {
                 list.sort((a,b) => new Date(a.date) - new Date(b.date));
                 const catName = currentTab === 'safe' ? '保險箱' : '保留區';
-                ui.listTitle.innerHTML = "<span class='text-custom-accent font-bold'>" + currentMonth + "月份</span> <span class='mx-1.5'>-</span> <span>" + catName + "</span> <span class='text-xs font-noal ml-2 text-custom-dark/50'>(共 " + list.length + " 件)</span>";
+                ui.listTitle.innerHTML = "<span class='text-custom-accent font-bold'>" + currentMonth + "月份</span> <span class='mx-1.5'>-</span> <span>" + catName + "</span> <span class='text-xs font-normal ml-2 text-custom-dark/50'>(共 " + list.length + " 件)</span>";
             }
             
             if (list.length === 0) {
@@ -422,12 +428,13 @@
             const finderBadge = item.finder ? "<span class='flex items-center gap-1'><i class='fas fa-user-tag opacity-40'></i>拾獲: " + item.finder + "</span>" : "";
             const noteBadge = item.note ? "<span class='flex items-center gap-1'><i class='fas fa-quote-left opacity-40'></i>" + item.note + "</span>" : "";
             const editBadge = item.editHistory ? "<button onclick=\"showEditHistory('" + item.id + "')\" class='text-amber-600/80 font-bold border-b border-dashed border-amber-600/30 flex items-center gap-1 hover:text-amber-700 transition-colors'><i class='fas fa-history text-[10px]'></i>查看修改紀錄</button>" : "";
+            const roomDisplay = formatRoom(item.room);
 
             return "<div class='flex flex-col md:flex-row md:items-center justify-between p-4 px-6 border-b border-custom-dark/5 hover:bg-custom-base/40 gap-3'>" +
                 "<div class='flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-6 min-w-0'>" +
                     "<div class='flex items-center md:w-28 shrink-0'><span class='text-xs font-bold text-custom-dark/50 tracking-wider'>" + item.date + "</span></div>" +
                     "<div class='flex flex-col min-w-0 flex-1'>" +
-                        "<div class='flex items-center gap-3'><span class='font-bold text-lg whitespace-nowrap'>item.room + "</span><h4 class='font-bold text-custom-dark/90 text-base truncate'>" + item.name + "</h4></div>" +
+                        "<div class='flex items-center gap-3'><span class='font-bold text-lg whitespace-nowrap'>" + roomDisplay + "</span><h4 class='font-bold text-custom-dark/90 text-base truncate'>" + item.name + "</h4></div>" +
                         "<div class='flex items-center gap-4 mt-1.5 text-[11px] text-custom-dark/60 flex-wrap'>" + ownerBadge + finderBadge + noteBadge + editBadge + "</div>" +
                     "</div>" +
                 "</div>" +
@@ -442,6 +449,7 @@
         function createDeletedRowHTML(item) {
             const badge = item.deleteReason === 'guest' ? "<span class='text-custom-accent font-bold bg-custom-accent/10 px-2 py-0.5 rounded flex items-center gap-1'><i class='fas fa-user-check text-[10px]'></i> 客人取走</span>" : "<span class='text-custom-dark/70 font-bold bg-custom-dark/5 px-2 py-0.5 rounded flex items-center gap-1'><i class='fas fa-trash-alt text-[10px]'></i> 逾期整理</span>";
             const catName = item.category === 'safe' ? '保險箱' : '保留區';
+            const roomDisplay = formatRoom(item.room);
             let ownerText = "";
             if (item.ownerName || item.ownerPhone) {
                 ownerText = "<span class='flex items-center gap-1.5'><i class='fas fa-address-book opacity-40'></i>失主: " + (item.ownerName||'未填') + " " + (item.ownerPhone||'') + "</span>";
@@ -452,7 +460,7 @@
                 "<div class='flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-6 min-w-0'>" +
                     "<div class='flex items-center gap-2 md:w-28 shrink-0'><span class='text-[10px] px-1.5 py-0.5 bg-custom-base text-custom-dark/60 rounded font-bold'>" + catName + "</span><span class='text-[11px] font-bold text-custom-dark/30 line-through'>" + item.date + "</span></div>" +
                     "<div class='flex flex-col min-w-0 flex-1'>" +
-                        "<div class='flex items-center gap-3'><span class='font-bold text-custom-dark/40 text-lg line-through'>item.room + "</span><h4 class='font-bold text-custom-dark/40 text-base truncate line-through'>" + item.name + "</h4><div class='ml-2 text-[11px]'>" + badge + "</div></div>" +
+                        "<div class='flex items-center gap-3'><span class='font-bold text-custom-dark/40 text-lg line-through'>" + roomDisplay + "</span><h4 class='font-bold text-custom-dark/40 text-base truncate line-through'>" + item.name + "</h4><div class='ml-2 text-[11px]'>" + badge + "</div></div>" +
                         "<div class='flex items-center gap-4 mt-1.5 text-[11px] text-custom-dark/40 flex-wrap'>" + ownerText + editBadge + "</div>" +
                     "</div>" +
                 "</div>" +
@@ -465,7 +473,6 @@
             const item = dbItems.find(i => i.id === id);
             if(!item || !item.editHistory) return;
             document.getElementById('history-content').innerText = item.editHistory;
-            
             ui.historyModal.classList.remove('hidden');
             ui.historyModal.querySelector('div').classList.replace('modal-enter', 'modal-enter-active');
         }
@@ -530,12 +537,12 @@
                 ownerName: document.getElementById('item-owner-name').value.trim(), ownerPhone: document.getElementById('item-owner-phone').value.trim(),
                 finder: document.getElementById('item-finder').value.trim(), note: document.getElementById('item-note').value.trim()
             };
-            if (!v.date || !v.room || !v.name) return showToast('日期、房號與物品名稱為必填', 'error');
+            if (!v.date || !v.room || !v.name) return showToast('日期、區域與物品名稱為必填', 'error');
             const pMonth = parseInt(v.date.split('-')[1], 10);
             const mTab = v.cat === 'safe' ? '保險箱' : '保留區';
+            const displayRoomText = formatRoom(v.room);
 
             if (editTargetId) {
-                // 🔴 編輯模式，加入詳細的差異比對 (Old ➡️ New)
                 const old = dbItems.find(i => i.id === editTargetId);
                 let diffs = [];
                 
@@ -544,7 +551,7 @@
                     if(o !== n) diffs.push(" • " + field + ": " + o + " ➡️ " + n);
                 };
                 checkDiff('日期', old.date, v.date);
-                checkDiff('房號', old.room, v.room);
+                checkDiff('區域', old.room, v.room);
                 checkDiff('物品', old.name, v.name);
                 checkDiff('失主', old.ownerName, v.ownerName);
                 checkDiff('電話', old.ownerPhone, v.ownerPhone);
@@ -586,7 +593,7 @@
                 closeItemModal(); currentTab = v.cat; currentMonth = pMonth;
                 ui.btnDeletedZone.classList.replace('bg-custom-dark', 'bg-custom-base');
                 ui.btnDeletedZone.classList.replace('text-white', 'text-custom-dark');
-                renderView(); showToast("✅ 已新增：v.room + " " + v.name, 'success');
+                renderView(); showToast("✅ 已新增：" + displayRoomText + " " + v.name, 'success');
                 
                 try {
                     await fetch(API_URL, {
@@ -602,11 +609,10 @@
             }
         }
 
-        // --- 取出邏輯 ---
         function openRetrieveModal(id) {
             const item = dbItems.find(i => i.id === id);
             if (!item) return; itemToRetrieve = id;
-            document.getElementById('retrieve-room').innerText = item.room;
+            document.getElementById('retrieve-room').innerText = formatRoom(item.room);
             document.getElementById('retrieve-name').innerText = item.name;
             ui.retrieveModal.classList.remove('hidden');
             requestAnimationFrame(() => ui.retrieveModalContent.classList.replace('scale-95', 'scale-100'));
