@@ -29,8 +29,8 @@
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(102, 100, 100, 0.15); border-radius: 10px; }
-        .modal-enter { opacity: 0; transform: scale(0.98) translateY(5px); }
-        .modal-enter-active { opacity: 1; transform: scale(1) translateY(0); transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+        .modal-enter { opacity: 0; transfo: scale(0.98) translateY(5px); }
+        .modal-enter-active { opacity: 1; transfo: scale(1) translateY(0); transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
         input:focus, select:focus, textarea:focus { outline: none; border-color: #72c3d7; box-shadow: 0 0 0 2px rgba(114, 195, 215, 0.15); }
     </style>
 </head>
@@ -53,11 +53,11 @@
                 </div>
                 <h1 class="text-xl font-bold text-custom-dark tracking-wide">遺留物管理系統</h1>
             </div>
-            <form id="login-form" class="space-y-4">
+            <fo id="login-fo" class="space-y-4">
                 <input type="text" id="username" required autocomplete="off" class="w-full bg-custom-base/30 border border-custom-dark/20 px-4 py-3 rounded-lg text-center text-sm" placeholder="請輸入帳號">
                 <input type="password" id="password" required autocomplete="off" class="w-full bg-custom-base/30 border border-custom-dark/20 px-4 py-3 rounded-lg text-center text-sm" placeholder="請輸入密碼">
                 <button type="submit" class="w-full bg-custom-accent hover:opacity-90 text-white font-bold py-3 rounded-lg transition-colors mt-2">登入系統</button>
-            </form>
+            </fo>
         </div>
     </div>
 
@@ -160,22 +160,22 @@
 
                 <div class="grid grid-cols-2 gap-4 bg-custom-base/30 p-3.5 rounded-xl border border-custom-dark/10">
                     <div>
-                        <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">失主姓名 <span class="font-normal opacity-60">(選填)</span></label>
+                        <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">失主姓名 <span class="font-noal opacity-60">(選填)</span></label>
                         <input type="text" id="item-owner-name" class="w-full bg-white border border-custom-dark/20 px-3 py-2 rounded-lg text-sm transition-colors focus:bg-white" placeholder="例: 王先生">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">聯絡電話 <span class="font-normal opacity-60">(選填)</span></label>
+                        <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">聯絡電話 <span class="font-noal opacity-60">(選填)</span></label>
                         <input type="text" id="item-owner-phone" class="w-full bg-white border border-custom-dark/20 px-3 py-2 rounded-lg text-sm transition-colors focus:bg-white" placeholder="例: 0912345678">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">拾獲人 <span class="font-normal opacity-60">(選填)</span></label>
+                    <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">拾獲人 <span class="font-noal opacity-60">(選填)</span></label>
                     <input type="text" id="item-finder" class="w-full bg-custom-base/50 border border-custom-dark/20 px-3 py-2.5 rounded-lg text-sm">
                 </div>
                 
                 <div>
-                    <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">備註事項 <span class="font-normal opacity-60">(選填)</span></label>
+                    <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">備註事項 <span class="font-noal opacity-60">(選填)</span></label>
                     <textarea id="item-note" rows="2" class="w-full bg-custom-base/50 border border-custom-dark/20 px-3 py-2.5 rounded-lg text-sm resize-none"></textarea>
                 </div>
             </div>
@@ -204,7 +204,7 @@
 
     <!-- 取出 Modal -->
     <div id="retrieve-modal" class="hidden fixed inset-0 bg-custom-dark/20 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden transform transition-transform scale-95 opacity-0 border border-custom-dark/5" id="retrieve-modal-content">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden transfo transition-transfo scale-95 opacity-0 border border-custom-dark/5" id="retrieve-modal-content">
             <div class="p-8 text-center relative">
                 <button onclick="closeRetrieveModal()" class="absolute top-4 right-4 text-custom-dark/40 hover:bg-custom-base hover:text-custom-dark w-8 h-8 rounded-full"><i class="fas fa-times"></i></button>
                 <div class="w-12 h-12 bg-custom-accent/10 rounded-full flex items-center justify-center mx-auto mb-4 text-custom-accent text-xl"><i class="fas fa-hand-holding"></i></div>
@@ -237,7 +237,7 @@
 
             Object.assign(ui, {
                 loadingOverlay: document.getElementById('loading-overlay'), loginScreen: document.getElementById('login-screen'),
-                appScreen: document.getElementById('app-screen'), loginForm: document.getElementById('login-form'),
+                appScreen: document.getElementById('app-screen'), loginFo: document.getElementById('login-fo'),
                 usernameInput: document.getElementById('username'), passwordInput: document.getElementById('password'),
                 displayUsername: document.getElementById('display-username'), tabBtns: document.querySelectorAll('.tab-btn'),
                 btnDeletedZone: document.getElementById('btn-deleted-zone'), countSafe: document.getElementById('count-safe'),
@@ -254,8 +254,8 @@
                 ui.searchInput.addEventListener('input', (e) => { searchQuery = e.target.value.toLowerCase().trim(); renderList(currentTab === 'deleted'); });
             }
 
-            if(ui.loginForm) {
-                ui.loginForm.addEventListener('submit', async (e) => {
+            if(ui.loginFo) {
+                ui.loginFo.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const u = ui.usernameInput.value.trim(); const p = ui.passwordInput.value.trim();
                     if(!u || !p) return showToast("請輸入完整帳號密碼", "error");
@@ -362,11 +362,11 @@
                 renderList(true);
             } else {
                 ui.interactiveSection.classList.remove('hidden'); ui.searchSection.classList.add('hidden');
-                renderMonthsGrid(); renderList(false);
+                rendeonthsGrid(); renderList(false);
             }
         }
 
-        function renderMonthsGrid() {
+        function rendeonthsGrid() {
             ui.monthsGrid.innerHTML = '';
             for (let i = 1; i <= 12; i++) {
                 const has = dbItems.some(item => item.status === 'active' && item.category === currentTab && item.month === i);
@@ -397,7 +397,7 @@
             else {
                 list.sort((a,b) => new Date(a.date) - new Date(b.date));
                 const catName = currentTab === 'safe' ? '保險箱' : '保留區';
-                ui.listTitle.innerHTML = "<span class='text-custom-accent font-bold'>" + currentMonth + "月份</span> <span class='mx-1.5'>-</span> <span>" + catName + "</span> <span class='text-xs font-normal ml-2 text-custom-dark/50'>(共 " + list.length + " 件)</span>";
+                ui.listTitle.innerHTML = "<span class='text-custom-accent font-bold'>" + currentMonth + "月份</span> <span class='mx-1.5'>-</span> <span>" + catName + "</span> <span class='text-xs font-noal ml-2 text-custom-dark/50'>(共 " + list.length + " 件)</span>";
             }
             
             if (list.length === 0) {
@@ -427,7 +427,7 @@
                 "<div class='flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-6 min-w-0'>" +
                     "<div class='flex items-center md:w-28 shrink-0'><span class='text-xs font-bold text-custom-dark/50 tracking-wider'>" + item.date + "</span></div>" +
                     "<div class='flex flex-col min-w-0 flex-1'>" +
-                        "<div class='flex items-center gap-3'><span class='font-bold text-lg whitespace-nowrap'>Rm " + item.room + "</span><h4 class='font-bold text-custom-dark/90 text-base truncate'>" + item.name + "</h4></div>" +
+                        "<div class='flex items-center gap-3'><span class='font-bold text-lg whitespace-nowrap'>item.room + "</span><h4 class='font-bold text-custom-dark/90 text-base truncate'>" + item.name + "</h4></div>" +
                         "<div class='flex items-center gap-4 mt-1.5 text-[11px] text-custom-dark/60 flex-wrap'>" + ownerBadge + finderBadge + noteBadge + editBadge + "</div>" +
                     "</div>" +
                 "</div>" +
@@ -452,7 +452,7 @@
                 "<div class='flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-6 min-w-0'>" +
                     "<div class='flex items-center gap-2 md:w-28 shrink-0'><span class='text-[10px] px-1.5 py-0.5 bg-custom-base text-custom-dark/60 rounded font-bold'>" + catName + "</span><span class='text-[11px] font-bold text-custom-dark/30 line-through'>" + item.date + "</span></div>" +
                     "<div class='flex flex-col min-w-0 flex-1'>" +
-                        "<div class='flex items-center gap-3'><span class='font-bold text-custom-dark/40 text-lg line-through'>Rm " + item.room + "</span><h4 class='font-bold text-custom-dark/40 text-base truncate line-through'>" + item.name + "</h4><div class='ml-2 text-[11px]'>" + badge + "</div></div>" +
+                        "<div class='flex items-center gap-3'><span class='font-bold text-custom-dark/40 text-lg line-through'>item.room + "</span><h4 class='font-bold text-custom-dark/40 text-base truncate line-through'>" + item.name + "</h4><div class='ml-2 text-[11px]'>" + badge + "</div></div>" +
                         "<div class='flex items-center gap-4 mt-1.5 text-[11px] text-custom-dark/40 flex-wrap'>" + ownerText + editBadge + "</div>" +
                     "</div>" +
                 "</div>" +
@@ -586,7 +586,7 @@
                 closeItemModal(); currentTab = v.cat; currentMonth = pMonth;
                 ui.btnDeletedZone.classList.replace('bg-custom-dark', 'bg-custom-base');
                 ui.btnDeletedZone.classList.replace('text-white', 'text-custom-dark');
-                renderView(); showToast("✅ 已新增：Rm " + v.room + " " + v.name, 'success');
+                renderView(); showToast("✅ 已新增：v.room + " " + v.name, 'success');
                 
                 try {
                     await fetch(API_URL, {
