@@ -147,7 +147,8 @@
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-3 gap-4">
+                <!-- 加大這層的間距 gap-6 -->
+                <div class="grid grid-cols-3 gap-6">
                     <div class="col-span-1">
                         <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">房號 / 區域</label>
                         <input type="text" id="item-room" class="w-full bg-custom-base/50 border border-custom-dark/20 px-3 py-2.5 rounded-lg text-sm" placeholder="例: 101 或 大廳">
@@ -287,10 +288,9 @@
             if (currentUser && currentPassword) { showApp(); loadData(); } else { showLogin(); }
         });
 
-        // --- 工具：智慧判斷區域文字 ---
+        // 取消了 'R' 的邏輯，直接回傳原文字
         function formatRoom(roomText) {
-            if (!roomText) return "";
-            return /^\d/.test(roomText) ? "R " + roomText : roomText;
+            return roomText || "";
         }
 
         function toggleLoader(show) { if(ui.loadingOverlay) ui.loadingOverlay.style.display = show ? 'flex' : 'none'; }
@@ -430,11 +430,12 @@
             const editBadge = item.editHistory ? "<button onclick=\"showEditHistory('" + item.id + "')\" class='text-amber-600/80 font-bold border-b border-dashed border-amber-600/30 flex items-center gap-1 hover:text-amber-700 transition-colors'><i class='fas fa-history text-[10px]'></i>查看修改紀錄</button>" : "";
             const roomDisplay = formatRoom(item.room);
 
+            // 加大房號與物品的距離 (gap-4 sm:gap-6)，並加入垂直分隔線
             return "<div class='flex flex-col md:flex-row md:items-center justify-between p-4 px-6 border-b border-custom-dark/5 hover:bg-custom-base/40 gap-3'>" +
                 "<div class='flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-6 min-w-0'>" +
                     "<div class='flex items-center md:w-28 shrink-0'><span class='text-xs font-bold text-custom-dark/50 tracking-wider'>" + item.date + "</span></div>" +
                     "<div class='flex flex-col min-w-0 flex-1'>" +
-                        "<div class='flex items-center gap-3'><span class='font-bold text-lg whitespace-nowrap'>" + roomDisplay + "</span><h4 class='font-bold text-custom-dark/90 text-base truncate'>" + item.name + "</h4></div>" +
+                        "<div class='flex items-center gap-4 sm:gap-6'><span class='font-bold text-lg whitespace-nowrap min-w-[50px]'>" + roomDisplay + "</span><span class='w-px h-5 bg-custom-dark/20'></span><h4 class='font-bold text-custom-dark/90 text-base truncate'>" + item.name + "</h4></div>" +
                         "<div class='flex items-center gap-4 mt-1.5 text-[11px] text-custom-dark/60 flex-wrap'>" + ownerBadge + finderBadge + noteBadge + editBadge + "</div>" +
                     "</div>" +
                 "</div>" +
@@ -460,7 +461,7 @@
                 "<div class='flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-6 min-w-0'>" +
                     "<div class='flex items-center gap-2 md:w-28 shrink-0'><span class='text-[10px] px-1.5 py-0.5 bg-custom-base text-custom-dark/60 rounded font-bold'>" + catName + "</span><span class='text-[11px] font-bold text-custom-dark/30 line-through'>" + item.date + "</span></div>" +
                     "<div class='flex flex-col min-w-0 flex-1'>" +
-                        "<div class='flex items-center gap-3'><span class='font-bold text-custom-dark/40 text-lg line-through'>" + roomDisplay + "</span><h4 class='font-bold text-custom-dark/40 text-base truncate line-through'>" + item.name + "</h4><div class='ml-2 text-[11px]'>" + badge + "</div></div>" +
+                        "<div class='flex items-center gap-4 sm:gap-6'><span class='font-bold text-custom-dark/40 text-lg line-through min-w-[50px]'>" + roomDisplay + "</span><span class='w-px h-5 bg-custom-dark/10'></span><h4 class='font-bold text-custom-dark/40 text-base truncate line-through'>" + item.name + "</h4><div class='ml-2 text-[11px]'>" + badge + "</div></div>" +
                         "<div class='flex items-center gap-4 mt-1.5 text-[11px] text-custom-dark/40 flex-wrap'>" + ownerText + editBadge + "</div>" +
                     "</div>" +
                 "</div>" +
