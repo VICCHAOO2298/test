@@ -38,7 +38,7 @@
 
     <div id="loading-overlay" class="hidden absolute inset-0 bg-custom-base/80 backdrop-blur-[2px] z-[100] flex-col items-center justify-center">
         <i class="fas fa-circle-notch fa-spin text-4xl text-custom-accent mb-4"></i>
-        <p class="text-custom-dark font-bold tracking-widest text-sm uppercase mt-4" id="loading-text">處理中...</p>
+        <p class="text-custom-dark font-bold tracking-widest text-sm uppercase">讀取中...</p>
     </div>
 
     <div id="toast-container" class="fixed top-6 left-1/2 -translate-x-1/2 z-[70] flex flex-col gap-3 pointer-events-none"></div>
@@ -112,13 +112,11 @@
                 <div class="flex-1 flex flex-col min-h-0 bg-white rounded-xl shadow-soft border border-custom-dark/10 w-full overflow-hidden relative">
                     <div class="flex items-center px-6 py-4 shrink-0 border-b border-custom-dark/10 bg-[#faf9f8] z-10">
                         <h3 id="list-title" class="font-bold text-base tracking-wide flex items-center gap-2"></h3>
-                        <!-- 背景同步狀態小綠點 -->
                         <div id="sync-status" class="ml-auto flex items-center gap-2 text-[10px] text-custom-dark/40 transition-opacity opacity-0">
                             <span class="relative flex h-2 w-2">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                            </span>
-                            同步中
+                            </span>同步中
                         </div>
                     </div>
                     <div id="item-list-container" class="flex-1 overflow-y-auto custom-scrollbar flex flex-col relative"></div>
@@ -240,26 +238,22 @@
 
         function el(id) { return document.getElementById(id); }
 
-        // 🌟 新增：抗網路波動的 API 呼叫神器 (自動重試機制)
         async function apiCallWithRetry(payload, retries = 3) {
             for (let i = 0; i < retries; i++) {
                 try {
-                    const res = await fetch(API_URL, { 
-                        method: "POST", 
-                        body: JSON.stringify(payload) 
-                    });
+                    const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
                     return await res.json();
                 } catch (err) {
-                    if (i === retries - 1) throw err; // 最後一次依然失敗才報錯
-                    await new Promise(function(resolve) { setTimeout(resolve, 1000 * (i + 1)); }); // 等待後重試
+                    if (i === retries - 1) throw err;
+                    await new Promise(function(resolve) { setTimeout(resolve, 1000 * (i + 1)); });
                 }
             }
         }
 
         window.onload = function() {
             try { 
-                currentUser = localStorage.getItem('boutique_lf_user_v16') || ''; 
-                currentPassword = localStorage.getItem('boutique_lf_pass_v16') || ''; 
+                currentUser = localStorage.getItem('boutique_lf_user_v17') || ''; 
+                currentPassword = localStorage.getItem('boutique_lf_pass_v17') || ''; 
             } catch (e) {}
 
             const today = new Date();
@@ -267,14 +261,14 @@
 
             if (currentUser && currentPassword) { 
                 showApp(); 
-                // 🌟 快取優先策略：如果有上次的記憶，瞬間繪製畫面 (0秒啟動)
-                const cachedData = localStorage.getItem('boutique_lf_cache_v16');
+                // 🚀 關鍵快取機制：有快取就瞬間畫圖，然後在背景更新
+                const cachedData = localStorage.getItem('boutique_lf_cache_v17');
                 if (cachedData) {
                     processFetchedData(JSON.parse(cachedData));
                     renderView();
-                    loadDataBackground(); // 在背景默默對齊最新資料
+                    loadDataBackground(); 
                 } else {
-                    loadData(); // 第一次登入或沒快取，才顯示轉圈圈
+                    loadData(); // 第一次登入才轉圈圈
                 }
             } else { 
                 showLogin(); 
@@ -285,13 +279,8 @@
             }, 3 * 60 * 1000);
         };
 
-        function toggleLoader(show) { 
-            if(el('loading-overlay')) el('loading-overlay').style.display = show ? 'flex' : 'none'; 
-        }
-
-        function toggleSyncBadge(show) {
-            if(el('sync-status')) el('sync-status').style.opacity = show ? '1' : '0';
-        }
+        function toggleLoader(show) { if(el('loading-overlay')) el('loading-overlay').style.display = show ? 'flex' : 'none'; }
+        function toggleSyncBadge(show) { if(el('sync-status')) el('sync-status').style.opacity = show ? '1' : '0'; }
 
         async function submitLogin() {
             const u = el('username').value.trim(); const p = el('password').value.trim();
@@ -303,8 +292,8 @@
                 if(data.success) {
                     currentUser = data.user; currentPassword = p;
                     try { 
-                        localStorage.setItem('boutique_lf_user_v16', currentUser); 
-                        localStorage.setItem('boutique_lf_pass_v16', currentPassword); 
+                        localStorage.setItem('boutique_lf_user_v17', currentUser); 
+                        localStorage.setItem('boutique_lf_pass_v17', currentPassword); 
                     } catch(err) {}
                     showApp(); 
                     loadData(); 
@@ -312,9 +301,7 @@
                 } else { 
                     showToast(data.message || "登入失敗", 'error'); 
                 }
-            } catch(err) { 
-                showToast("連線至伺服器失敗，請檢查網路連線", 'error'); 
-            }
+            } catch(err) { showToast("連線至伺服器失敗，請檢查網路連線", 'error'); }
             toggleLoader(false);
         }
 
@@ -323,30 +310,28 @@
             try {
                 const data = await apiCallWithRetry({ action: "getData", username: currentUser, password: currentPassword });
                 if(data.success) { 
-                    try { localStorage.setItem('boutique_lf_cache_v16', JSON.stringify(data.data)); } catch(e){}
+                    try { localStorage.setItem('boutique_lf_cache_v17', JSON.stringify(data.data)); } catch(e){}
                     processFetchedData(data.data); 
                     renderView(); 
                 } else { 
                     showToast("密碼已變更或授權過期", "error"); 
                     handleLogout(); 
                 }
-            } catch (e) { 
-                showToast("讀取資料失敗，請重新整理", "error"); 
-            }
+            } catch (e) { showToast("讀取資料失敗，請重新整理", "error"); }
             toggleLoader(false);
         }
 
         async function loadDataBackground() {
-            toggleSyncBadge(true); // 顯示背景同步小綠點
+            toggleSyncBadge(true);
             try {
                 const data = await apiCallWithRetry({ action: "getData", username: currentUser, password: currentPassword }, 2);
                 if(data.success) { 
-                    try { localStorage.setItem('boutique_lf_cache_v16', JSON.stringify(data.data)); } catch(e){}
+                    try { localStorage.setItem('boutique_lf_cache_v17', JSON.stringify(data.data)); } catch(e){}
                     processFetchedData(data.data); 
                     renderView(); 
                 }
             } catch (e) {}
-            setTimeout(function(){ toggleSyncBadge(false); }, 1500); // 同步完成後隱藏小綠點
+            setTimeout(function(){ toggleSyncBadge(false); }, 1500);
         }
 
         function processFetchedData(data) {
@@ -376,9 +361,9 @@
         function handleLogout() {
             currentUser = ''; currentPassword = '';
             try { 
-                localStorage.removeItem('boutique_lf_user_v16'); 
-                localStorage.removeItem('boutique_lf_pass_v16'); 
-                localStorage.removeItem('boutique_lf_cache_v16');
+                localStorage.removeItem('boutique_lf_user_v17'); 
+                localStorage.removeItem('boutique_lf_pass_v17'); 
+                localStorage.removeItem('boutique_lf_cache_v17');
             } catch(e){}
             showLogin();
         }
@@ -477,6 +462,9 @@
 
         function formatRoom(roomText) { return roomText || ""; }
 
+        // ==========================================
+        // 🌟 最終排版對齊區域：強制鎖定 100px 寬度，完美對齊
+        // ==========================================
         function createActiveRowHTML(item) {
             let ownerBadge = "";
             if (item.ownerName || item.ownerPhone) {
@@ -491,8 +479,11 @@
                 "<div class='flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-6 min-w-0'>" +
                     "<div class='flex items-center md:w-28 shrink-0'><span class='text-xs font-bold text-custom-dark/50 tracking-wider'>" + item.date + "</span></div>" +
                     "<div class='flex flex-col min-w-0 flex-1'>" +
-                        "<div class='flex items-center gap-4 sm:gap-6'><span class='font-bold text-lg whitespace-nowrap min-w-[50px]'>" + formatRoom(item.room) + "</span><span class='w-px h-5 bg-custom-dark/20 shrink-0'></span><h4 class='font-bold text-custom-dark/90 text-base truncate'>" + item.name + "</h4></div>" +
-                        "<div class='flex items-center gap-4 mt-1.5 text-[11px] text-custom-dark/60 flex-wrap'>" + ownerBadge + finderBadge + noteBadge + editBadge + "</div>" +
+                        "<div class='flex items-center'>" +
+                            "<div class='font-bold text-lg w-[80px] sm:w-[100px] shrink-0 truncate border-r border-custom-dark/20 mr-3 pr-3 sm:mr-4 sm:pr-4' title='" + formatRoom(item.room) + "'>" + formatRoom(item.room) + "</div>" +
+                            "<h4 class='font-bold text-custom-dark/90 text-base truncate flex-1' title='" + item.name + "'>" + item.name + "</h4>" +
+                        "</div>" +
+                        "<div class='flex items-center gap-4 mt-2 text-[11px] text-custom-dark/60 flex-wrap'>" + ownerBadge + finderBadge + noteBadge + editBadge + "</div>" +
                     "</div>" +
                 "</div>" +
                 "<div class='flex items-center gap-2.5 shrink-0 self-end md:self-auto mt-3 md:mt-0'>" +
@@ -505,16 +496,21 @@
 
         function createDeletedRowHTML(item) {
             const badge = item.deleteReason === 'guest' ? "<span class='text-custom-accent font-bold bg-custom-accent/10 px-2 py-0.5 rounded flex items-center gap-1'><i class='fas fa-user-check text-[10px]'></i> 客人取走</span>" : "<span class='text-custom-dark/70 font-bold bg-custom-dark/5 px-2 py-0.5 rounded flex items-center gap-1'><i class='fas fa-trash-alt text-[10px]'></i> 逾期整理</span>";
+            const catName = item.category === 'safe' ? '保險箱' : '保留區';
             let ownerText = "";
             if (item.ownerName || item.ownerPhone) ownerText = "<span class='flex items-center gap-1.5'><i class='fas fa-address-book opacity-40'></i>失主: " + (item.ownerName||'未填') + " " + (item.ownerPhone||'') + "</span>";
             const editBadge = item.editHistory ? "<button onclick=\"showEditHistory('" + item.id + "')\" class='cursor-pointer border-b border-dashed border-custom-dark/20 flex items-center gap-1 hover:text-custom-dark transition-colors'><i class='fas fa-history text-[10px] opacity-60'></i>查看紀錄</button>" : "";
 
             return "<div class='flex flex-col md:flex-row md:items-center justify-between p-4 px-6 border-b border-custom-dark/5 bg-white opacity-95 gap-3 hover:bg-custom-base/20'>" +
                 "<div class='flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-6 min-w-0'>" +
-                    "<div class='flex items-center gap-2 md:w-28 shrink-0'><span class='text-[10px] px-1.5 py-0.5 bg-custom-base text-custom-dark/60 rounded font-bold'>" + (item.category==='safe'?'保險箱':'保留區') + "</span><span class='text-[11px] font-bold text-custom-dark/30 line-through'>" + item.date + "</span></div>" +
+                    "<div class='flex items-center gap-2 md:w-28 shrink-0'><span class='text-[10px] px-1.5 py-0.5 bg-custom-base text-custom-dark/60 rounded font-bold'>" + catName + "</span><span class='text-[11px] font-bold text-custom-dark/30 line-through'>" + item.date + "</span></div>" +
                     "<div class='flex flex-col min-w-0 flex-1'>" +
-                        "<div class='flex items-center gap-4 sm:gap-6'><span class='font-bold text-custom-dark/40 text-lg line-through min-w-[50px]'>" + formatRoom(item.room) + "</span><span class='w-px h-5 bg-custom-dark/10 shrink-0'></span><h4 class='font-bold text-custom-dark/40 text-base truncate line-through'>" + item.name + "</h4><div class='ml-2 text-[11px] shrink-0'>" + badge + "</div></div>" +
-                        "<div class='flex items-center gap-4 mt-1.5 text-[11px] text-custom-dark/40 flex-wrap'>" + ownerText + editBadge + "</div>" +
+                        "<div class='flex items-center'>" +
+                            "<div class='font-bold text-custom-dark/40 text-lg line-through w-[80px] sm:w-[100px] shrink-0 truncate border-r border-custom-dark/10 mr-3 pr-3 sm:mr-4 sm:pr-4' title='" + formatRoom(item.room) + "'>" + formatRoom(item.room) + "</div>" +
+                            "<h4 class='font-bold text-custom-dark/40 text-base truncate line-through flex-1' title='" + item.name + "'>" + item.name + "</h4>" +
+                            "<div class='ml-3 text-[11px] shrink-0'>" + badge + "</div>" +
+                        "</div>" +
+                        "<div class='flex items-center gap-4 mt-2 text-[11px] text-custom-dark/40 flex-wrap'>" + ownerText + editBadge + "</div>" +
                     "</div>" +
                 "</div>" +
                 "<div class='flex flex-col items-end shrink-0 text-[10px] text-custom-dark/50 bg-custom-base/40 px-3 py-1.5 rounded-lg border border-custom-dark/5'><div>處理: <span class='font-bold text-custom-dark/70'>" + item.deletedBy + "</span></div><div class='mt-0.5 text-[9px]'>" + item.deletedAtStr + "</div></div>" +
