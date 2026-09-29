@@ -427,7 +427,7 @@
                 "<div class='flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-6 min-w-0'>" +
                     "<div class='flex items-center md:w-28 shrink-0'><span class='text-xs font-bold text-custom-dark/50 tracking-wider'>" + item.date + "</span></div>" +
                     "<div class='flex flex-col min-w-0 flex-1'>" +
-                        "<div class='flex items-center gap-3'><span class='font-bold text-lg whitespace-nowrap'>Rm " + item.room + "</span><h4 class='font-bold text-custom-dark/90 text-base truncate'>" + item.name + "</h4></div>" +
+                        "<div class='flex items-center gap-3'><span class='font-bold text-lg whitespace-nowrap'>item.room + "</span><h4 class='font-bold text-custom-dark/90 text-base truncate'>" + item.name + "</h4></div>" +
                         "<div class='flex items-center gap-4 mt-1.5 text-[11px] text-custom-dark/60 flex-wrap'>" + ownerBadge + finderBadge + noteBadge + editBadge + "</div>" +
                     "</div>" +
                 "</div>" +
@@ -452,7 +452,7 @@
                 "<div class='flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-6 min-w-0'>" +
                     "<div class='flex items-center gap-2 md:w-28 shrink-0'><span class='text-[10px] px-1.5 py-0.5 bg-custom-base text-custom-dark/60 rounded font-bold'>" + catName + "</span><span class='text-[11px] font-bold text-custom-dark/30 line-through'>" + item.date + "</span></div>" +
                     "<div class='flex flex-col min-w-0 flex-1'>" +
-                        "<div class='flex items-center gap-3'><span class='font-bold text-custom-dark/40 text-lg line-through'>Rm " + item.room + "</span><h4 class='font-bold text-custom-dark/40 text-base truncate line-through'>" + item.name + "</h4><div class='ml-2 text-[11px]'>" + badge + "</div></div>" +
+                        "<div class='flex items-center gap-3'><span class='font-bold text-custom-dark/40 text-lg line-through'>item.room + "</span><h4 class='font-bold text-custom-dark/40 text-base truncate line-through'>" + item.name + "</h4><div class='ml-2 text-[11px]'>" + badge + "</div></div>" +
                         "<div class='flex items-center gap-4 mt-1.5 text-[11px] text-custom-dark/40 flex-wrap'>" + ownerText + editBadge + "</div>" +
                     "</div>" +
                 "</div>" +
@@ -586,7 +586,7 @@
                 closeItemModal(); currentTab = v.cat; currentMonth = pMonth;
                 ui.btnDeletedZone.classList.replace('bg-custom-dark', 'bg-custom-base');
                 ui.btnDeletedZone.classList.replace('text-white', 'text-custom-dark');
-                renderView(); showToast("✅ 已新增：Rm " + v.room + " " + v.name, 'success');
+                renderView(); showToast("✅ 已新增：v.room + " " + v.name, 'success');
                 
                 try {
                     await fetch(API_URL, {
