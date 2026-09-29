@@ -31,12 +31,9 @@
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(102, 100, 100, 0.15); border-radius: 10px; }
-        
         .modal-enter { opacity: 0; transform: scale(0.98) translateY(5px); }
         .modal-enter-active { opacity: 1; transform: scale(1) translateY(0); transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
-        
         input:focus, select:focus, textarea:focus { outline: none; border-color: #72c3d7; box-shadow: 0 0 0 2px rgba(114, 195, 215, 0.15); }
-        input:disabled, select:disabled { opacity: 0.6; cursor: not-allowed; }
     </style>
 </head>
 <body class="h-screen flex flex-col overflow-hidden font-sans text-custom-dark relative">
@@ -58,9 +55,9 @@
                 <h1 class="text-xl font-bold text-custom-dark tracking-wide">遺留物管理系統</h1>
             </div>
             <form id="login-form" class="space-y-4">
-                <input type="text" id="username" required autocomplete="off" class="w-full bg-custom-base/30 border border-custom-dark/20 px-4 py-3 rounded-lg text-center text-sm focus:bg-white transition-colors" placeholder="請輸入帳號">
-                <input type="password" id="password" required autocomplete="off" class="w-full bg-custom-base/30 border border-custom-dark/20 px-4 py-3 rounded-lg text-center text-sm focus:bg-white transition-colors" placeholder="請輸入密碼">
-                <button type="submit" class="w-full bg-custom-accent hover:opacity-90 text-white font-bold py-3 rounded-lg transition-colors mt-2 shadow-md">登入系統</button>
+                <input type="text" id="username" required autocomplete="off" class="w-full bg-custom-base/30 border border-custom-dark/20 px-4 py-3 rounded-lg text-center text-sm" placeholder="請輸入帳號">
+                <input type="password" id="password" required autocomplete="off" class="w-full bg-custom-base/30 border border-custom-dark/20 px-4 py-3 rounded-lg text-center text-sm" placeholder="請輸入密碼">
+                <button type="submit" class="w-full bg-custom-accent hover:opacity-90 text-white font-bold py-3 rounded-lg transition-colors mt-2">登入系統</button>
             </form>
         </div>
     </div>
@@ -75,10 +72,10 @@
                     </div>
                     <div class="flex items-center gap-2 md:gap-4">
                         <button onclick="openAddModal()" class="bg-custom-accent hover:opacity-90 text-white px-3 py-2 md:px-4 rounded-lg text-sm font-bold flex items-center gap-2"><i class="fas fa-plus"></i> <span class="hidden md:inline">新增物品</span></button>
-                        <button onclick="switchToDeletedZone()" id="btn-deleted-zone" class="bg-custom-base hover:bg-custom-dark hover:text-white text-custom-dark px-3 py-2 md:px-4 border border-custom-dark/10 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors"><i class="fas fa-archive"></i> <span class="hidden md:inline">刪除區紀錄</span></button>
+                        <button onclick="switchToDeletedZone()" id="btn-deleted-zone" class="bg-custom-base hover:bg-custom-dark hover:text-white text-custom-dark px-3 py-2 md:px-4 border border-custom-dark/10 rounded-lg text-sm font-bold flex items-center gap-2"><i class="fas fa-archive"></i> <span class="hidden md:inline">刪除區紀錄</span></button>
                         <div class="h-6 w-px bg-custom-dark/10 mx-1 md:mx-2 hidden sm:block"></div>
                         <div class="text-sm items-center gap-2 px-2 py-1 hidden sm:flex"><i class="fas fa-user-circle text-custom-accent/70 text-lg"></i> <span id="display-username" class="font-medium"></span></div>
-                        <button onclick="handleLogout()" class="text-custom-dark/50 hover:text-custom-dark p-2 transition-colors"><i class="fas fa-sign-out-alt"></i></button>
+                        <button onclick="handleLogout()" class="text-custom-dark/50 hover:text-custom-dark p-2"><i class="fas fa-sign-out-alt"></i></button>
                     </div>
                 </div>
             </div>
@@ -91,7 +88,7 @@
                         <span class="tracking-wider">保險箱</span><span id="count-safe" class="bg-custom-accent text-white px-2 py-0.5 rounded-full text-xs font-bold ml-1 transition-all">0</span>
                         <div class="tab-indicator absolute bottom-0 left-0 w-full h-0.5 bg-custom-accent transition-all duration-300"></div>
                     </button>
-                    <button class="tab-btn group py-4 px-2 relative text-sm font-bold text-custom-dark/50 hover:text-custom-dark flex items-center gap-2 transition-colors" data-tab="retention">
+                    <button class="tab-btn group py-4 px-2 relative text-sm font-bold text-custom-dark/50 hover:text-custom-dark flex items-center gap-2" data-tab="retention">
                         <span class="tracking-wider">保留區</span><span id="count-retention" class="bg-custom-dark/10 text-custom-dark px-2 py-0.5 rounded-full text-xs font-bold ml-1 transition-all">0</span>
                         <div class="tab-indicator absolute bottom-0 left-0 w-0 h-0.5 bg-custom-accent transition-all duration-300 group-hover:w-full"></div>
                     </button>
@@ -104,7 +101,7 @@
                 <div id="search-section" class="hidden shrink-0 w-full">
                     <div class="relative w-full max-w-md">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-custom-dark/40"><i class="fas fa-search"></i></div>
-                        <input type="text" id="search-input" class="w-full bg-white border border-custom-dark/20 rounded-lg pl-11 pr-4 py-2.5 text-sm shadow-sm" placeholder="搜尋日期、房號、失主、物品...">
+                        <input type="text" id="search-input" class="w-full bg-white border border-custom-dark/20 rounded-lg pl-11 pr-4 py-2.5 text-sm" placeholder="搜尋日期、房號、失主、物品...">
                     </div>
                 </div>
 
@@ -132,77 +129,77 @@
                 <h3 class="text-lg font-bold flex items-center gap-2 text-custom-accent">
                     <i id="modal-icon" class="fas fa-plus text-sm"></i> <span id="modal-title-text">新增物品登記</span>
                 </h3>
-                <button onclick="closeItemModal()" class="text-custom-dark/40 hover:bg-custom-base hover:text-custom-dark transition-colors w-8 h-8 rounded-full"><i class="fas fa-times"></i></button>
+                <button onclick="closeItemModal()" class="text-custom-dark/40 hover:bg-custom-base w-8 h-8 rounded-full"><i class="fas fa-times"></i></button>
             </div>
             
             <div class="p-6 overflow-y-auto space-y-4 flex-1 bg-white">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">存放區域</label>
+                        <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase">存放區域</label>
                         <select id="item-category" class="w-full bg-custom-base/50 border border-custom-dark/20 px-3 py-2.5 rounded-lg text-sm">
                             <option value="safe">保險箱</option>
                             <option value="retention">保留區</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">拾獲日期</label>
+                        <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase">拾獲日期</label>
                         <input type="date" id="item-date" class="w-full bg-custom-base/50 border border-custom-dark/20 px-3 py-2.5 rounded-lg text-sm">
                     </div>
                 </div>
                 
                 <div class="grid grid-cols-3 gap-4">
                     <div class="col-span-1">
-                        <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">房號</label>
+                        <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase">房號</label>
                         <input type="text" id="item-room" class="w-full bg-custom-base/50 border border-custom-dark/20 px-3 py-2.5 rounded-lg text-sm">
                     </div>
                     <div class="col-span-2">
-                        <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">物品名稱</label>
+                        <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase">物品名稱</label>
                         <input type="text" id="item-name" class="w-full bg-custom-base/50 border border-custom-dark/20 px-3 py-2.5 rounded-lg text-sm">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4 bg-custom-base/30 p-3.5 rounded-xl border border-custom-dark/10">
                     <div>
-                        <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">失主姓名 <span class="font-normal opacity-60">(選填)</span></label>
-                        <input type="text" id="item-owner-name" class="w-full bg-white border border-custom-dark/20 px-3 py-2 rounded-lg text-sm transition-colors focus:bg-white" placeholder="例: 王先生">
+                        <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase">失主姓名 <span class="font-normal opacity-60">(選填)</span></label>
+                        <input type="text" id="item-owner-name" class="w-full bg-white border border-custom-dark/20 px-3 py-2 rounded-lg text-sm" placeholder="例: 王先生">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">聯絡電話 <span class="font-normal opacity-60">(選填)</span></label>
-                        <input type="text" id="item-owner-phone" class="w-full bg-white border border-custom-dark/20 px-3 py-2 rounded-lg text-sm transition-colors focus:bg-white" placeholder="例: 0912345678">
+                        <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase">聯絡電話 <span class="font-normal opacity-60">(選填)</span></label>
+                        <input type="text" id="item-owner-phone" class="w-full bg-white border border-custom-dark/20 px-3 py-2 rounded-lg text-sm" placeholder="例: 0912345678">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">拾獲人 <span class="font-normal opacity-60">(選填)</span></label>
+                    <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase">拾獲人 <span class="font-normal opacity-60">(選填)</span></label>
                     <input type="text" id="item-finder" class="w-full bg-custom-base/50 border border-custom-dark/20 px-3 py-2.5 rounded-lg text-sm">
                 </div>
                 
                 <div>
-                    <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase tracking-wider">備註事項 <span class="font-normal opacity-60">(選填)</span></label>
+                    <label class="block text-[11px] font-bold text-custom-dark/70 mb-1.5 uppercase">備註事項 <span class="font-normal opacity-60">(選填)</span></label>
                     <textarea id="item-note" rows="2" class="w-full bg-custom-base/50 border border-custom-dark/20 px-3 py-2.5 rounded-lg text-sm resize-none"></textarea>
                 </div>
             </div>
             
             <div class="bg-[#faf9f8] border-t border-custom-dark/10 px-6 py-4 flex justify-end gap-3 shrink-0">
-                <button onclick="closeItemModal()" class="px-5 py-2 text-sm bg-white border border-custom-dark/20 hover:bg-custom-base rounded-lg font-bold transition-colors">取消</button>
-                <button onclick="submitItem()" id="modal-submit-btn" class="px-5 py-2 text-sm bg-custom-accent hover:opacity-90 text-white rounded-lg font-bold transition-colors shadow-sm">確認新增</button>
+                <button onclick="closeItemModal()" class="px-5 py-2 text-sm bg-white border border-custom-dark/20 hover:bg-custom-base rounded-lg font-bold">取消</button>
+                <button onclick="submitItem()" id="modal-submit-btn" class="px-5 py-2 text-sm bg-custom-accent hover:opacity-90 text-white rounded-lg font-bold">確認新增</button>
             </div>
         </div>
     </div>
 
     <!-- Retrieve Modal -->
     <div id="retrieve-modal" class="hidden fixed inset-0 bg-custom-dark/20 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden transform transition-transform scale-95 opacity-0 border border-custom-dark/5" id="retrieve-modal-content">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden transform transition-transform scale-95 opacity-0" id="retrieve-modal-content">
             <div class="p-8 text-center relative">
-                <button onclick="closeRetrieveModal()" class="absolute top-4 right-4 text-custom-dark/40 hover:bg-custom-base hover:text-custom-dark transition-colors w-8 h-8 rounded-full"><i class="fas fa-times"></i></button>
+                <button onclick="closeRetrieveModal()" class="absolute top-4 right-4 text-custom-dark/40 hover:bg-custom-base w-8 h-8 rounded-full"><i class="fas fa-times"></i></button>
                 <div class="w-12 h-12 bg-custom-accent/10 rounded-full flex items-center justify-center mx-auto mb-4 text-custom-accent text-xl"><i class="fas fa-hand-holding"></i></div>
                 <h3 class="text-lg font-bold mb-1">物品取出作業</h3>
-                <p class="text-custom-dark/60 text-sm mb-6 bg-custom-base/50 p-2 rounded-lg mt-3 border border-custom-dark/5">
+                <p class="text-custom-dark/60 text-sm mb-6 bg-custom-base/50 p-2 rounded-lg mt-3">
                     房號 <span id="retrieve-room" class="font-bold text-custom-dark mx-1"></span><br><span id="retrieve-name" class="font-bold text-custom-dark text-base mt-1 inline-block"></span>
                 </p>
                 <div class="flex flex-col gap-3">
-                    <button onclick="executeRetrieve('guest')" class="w-full bg-white border-2 border-custom-accent text-custom-accent hover:bg-custom-accent hover:text-white py-3 rounded-xl font-bold text-sm transition-colors shadow-sm flex justify-center items-center gap-2"><i class="fas fa-user-check"></i> 客人取走</button>
-                    <button onclick="executeRetrieve('expired')" class="w-full bg-white border-2 border-custom-dark/20 text-custom-dark/70 hover:border-custom-dark hover:bg-custom-dark hover:text-white py-3 rounded-xl font-bold text-sm transition-colors flex justify-center items-center gap-2"><i class="fas fa-trash-alt text-xs"></i> 逾期整理</button>
+                    <button onclick="executeRetrieve('guest')" class="w-full bg-white border-2 border-custom-accent text-custom-accent hover:bg-custom-accent hover:text-white py-3 rounded-xl font-bold text-sm flex justify-center items-center gap-2"><i class="fas fa-user-check"></i> 客人取走</button>
+                    <button onclick="executeRetrieve('expired')" class="w-full bg-white border-2 border-custom-dark/20 text-custom-dark/70 hover:bg-custom-dark hover:text-white py-3 rounded-xl font-bold text-sm flex justify-center items-center gap-2"><i class="fas fa-trash-alt text-xs"></i> 逾期整理</button>
                 </div>
             </div>
         </div>
@@ -210,7 +207,6 @@
 
     <script>
         // ==========================================
-        // 🚀 使用者提供的專屬部署 API 網址 (已自動帶入)
         const API_URL = "https://script.google.com/macros/s/AKfycbxCLUDHt9R22rFYW2VAYStejAOjlkyXQasyKVezQEexFxgL_yEdYXlImONzU0vwAAL8/exec";
         // ==========================================
 
@@ -223,13 +219,12 @@
         let editTargetId = null;
         let searchQuery = '';
 
-        const ui = {}; // 將在 DOMContentLoaded 初始化
+        const ui = {};
 
-        // 安全取得 DOM 元素，防止阻擋報錯
         document.addEventListener('DOMContentLoaded', () => {
             try {
-                currentUser = localStorage.getItem('boutique_lf_user_v9') || '';
-                currentPassword = localStorage.getItem('boutique_lf_pass_v9') || '';
+                currentUser = localStorage.getItem('boutique_lf_user_v10') || '';
+                currentPassword = localStorage.getItem('boutique_lf_pass_v10') || '';
             } catch (e) {
                 console.warn("無法存取 localStorage");
             }
@@ -259,15 +254,13 @@
                 retrieveModalContent: document.getElementById('retrieve-modal-content'),
             });
 
-            // 初始化當日日期
             const today = new Date();
             const yyyy = today.getFullYear();
             const mm = String(today.getMonth() + 1).padStart(2, '0');
             const dd = String(today.getDate()).padStart(2, '0');
             const dateInput = document.getElementById('item-date');
-            if (dateInput) dateInput.value = `${yyyy}-${mm}-${dd}`;
+            if (dateInput) dateInput.value = yyyy + "-" + mm + "-" + dd;
 
-            // 註冊搜尋事件
             if(ui.searchInput) {
                 ui.searchInput.addEventListener('input', (e) => { 
                     searchQuery = e.target.value.toLowerCase().trim(); 
@@ -275,7 +268,6 @@
                 });
             }
 
-            // 註冊登入事件 (加入防呆捕捉)
             if(ui.loginForm) {
                 ui.loginForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
@@ -293,22 +285,20 @@
                         if(data.success) {
                             currentUser = data.user; currentPassword = p;
                             try {
-                                localStorage.setItem('boutique_lf_user_v9', currentUser);
-                                localStorage.setItem('boutique_lf_pass_v9', currentPassword);
+                                localStorage.setItem('boutique_lf_user_v10', currentUser);
+                                localStorage.setItem('boutique_lf_pass_v10', currentPassword);
                             } catch(err) {}
-                            showApp(); loadData(); showToast(`登入成功，歡迎 ${currentUser}`, 'success');
+                            showApp(); loadData(); showToast("登入成功，歡迎 " + currentUser, 'success');
                         } else { 
                             showToast(data.message || "登入失敗", 'error'); 
                         }
                     } catch(err) { 
                         showToast("連線至伺服器失敗，請檢查網路", 'error'); 
-                        console.error(err);
                     }
                     toggleLoader(false);
                 });
             }
 
-            // 註冊 Tab 事件
             ui.tabBtns.forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     currentTab = e.currentTarget.getAttribute('data-tab'); searchQuery = ''; ui.searchInput.value = '';
@@ -323,7 +313,6 @@
                 });
             });
 
-            // 畫面初始狀態判定
             if (currentUser && currentPassword) { showApp(); loadData(); } else { showLogin(); }
         });
 
@@ -336,10 +325,7 @@
                 const data = await res.json();
                 if(data.success) { processFetchedData(data.data); renderView(); } 
                 else { showToast("密碼已變更或授權過期", "error"); handleLogout(); }
-            } catch (e) { 
-                showToast("讀取資料失敗，請重新整理", "error"); 
-                console.error(e);
-            }
+            } catch (e) { showToast("讀取資料失敗，請重新整理", "error"); }
             toggleLoader(false);
         }
 
@@ -351,7 +337,7 @@
             } catch (e) {}
         }
         
-        setInterval(() => { if (currentUser) loadDataBackground(); }, 3 * 60 * 1000); // 3分鐘背景同步
+        setInterval(() => { if (currentUser) loadDataBackground(); }, 3 * 60 * 1000);
 
         function processFetchedData(data) {
             dbItems = [];
@@ -377,9 +363,7 @@
 
         function handleLogout() {
             currentUser = ''; currentPassword = '';
-            try {
-                localStorage.removeItem('boutique_lf_user_v9'); localStorage.removeItem('boutique_lf_pass_v9');
-            } catch(e){}
+            try { localStorage.removeItem('boutique_lf_user_v10'); localStorage.removeItem('boutique_lf_pass_v10'); } catch(e){}
             showLogin();
         }
 
@@ -399,7 +383,8 @@
         function updateBadges() {
             ui.countSafe.innerText = dbItems.filter(i => i.status === 'active' && i.category === 'safe').length;
             ui.countRetention.innerText = dbItems.filter(i => i.status === 'active' && i.category === 'retention').length;
-            const sOn = 'bg-custom-accent text-white px-2 py-0.5 rounded-full text-[10px] font-bold ml-1', sOff = 'bg-custom-dark/10 text-custom-dark px-2 py-0.5 rounded-full text-[10px] font-bold ml-1';
+            const sOn = 'bg-custom-accent text-white px-2 py-0.5 rounded-full text-[10px] font-bold ml-1';
+            const sOff = 'bg-custom-dark/10 text-custom-dark px-2 py-0.5 rounded-full text-[10px] font-bold ml-1';
             ui.countSafe.className = currentTab === 'safe' ? sOn : sOff;
             ui.countRetention.className = currentTab === 'retention' ? sOn : sOff;
         }
@@ -421,10 +406,19 @@
             for (let i = 1; i <= 12; i++) {
                 const has = dbItems.some(item => item.status === 'active' && item.category === currentTab && item.month === i);
                 const btn = document.createElement('button');
-                btn.className = `min-w-[50px] lg:min-w-[56px] h-[50px] lg:h-[56px] rounded-xl flex flex-col items-center justify-center transition-all border ` + 
-                    (has ? `bg-custom-accent border-custom-accent text-white ${i!==currentMonth?'opacity-80 hover:opacity-100':''}` : 
-                    (i===currentMonth ? `border-custom-accent bg-white text-custom-accent` : `border-custom-dark/10 bg-white text-custom-dark/40 hover:bg-custom-base`));
-                btn.innerHTML = `<span class="text-lg font-bold leading-none mb-0.5">${i}</span><span class="text-[9px] uppercase font-bold tracking-widest opacity-80 mt-0.5">月</span>`;
+                
+                let btnClass = "min-w-[50px] lg:min-w-[56px] h-[50px] lg:h-[56px] rounded-xl flex flex-col items-center justify-center transition-all border ";
+                if (has) {
+                    btnClass += "bg-custom-accent border-custom-accent text-white ";
+                    if (i !== currentMonth) btnClass += "opacity-80 hover:opacity-100";
+                } else if (i === currentMonth) {
+                    btnClass += "border-custom-accent bg-white text-custom-accent";
+                } else {
+                    btnClass += "border-custom-dark/10 bg-white text-custom-dark/40 hover:bg-custom-base";
+                }
+                
+                btn.className = btnClass;
+                btn.innerHTML = "<span class='text-lg font-bold leading-none mb-0.5'>" + i + "</span><span class='text-[9px] uppercase font-bold tracking-widest opacity-80 mt-0.5'>月</span>";
                 btn.onclick = () => { currentMonth = i; renderView(); };
                 ui.monthsGrid.appendChild(btn);
             }
@@ -435,80 +429,98 @@
             let list = isDel ? dbItems.filter(i => i.status === 'deleted') : dbItems.filter(i => i.status === 'active' && i.category === currentTab && i.month === currentMonth);
             
             if (isDel && searchQuery) {
-                list = list.filter(i => (i.date+i.room+i.name+(i.ownerName||'')+(i.ownerPhone||'')+(i.note||'')).toLowerCase().includes(searchQuery));
+                list = list.filter(i => {
+                    const str = (i.date + i.room + i.name + (i.ownerName||'') + (i.ownerPhone||'') + (i.note||'')).toLowerCase();
+                    return str.includes(searchQuery);
+                });
             }
             
-            isDel ? list.sort((a,b) => new Date(b.deletedAtStr) - new Date(a.deletedAtStr)) : list.sort((a,b) => new Date(a.date) - new Date(b.date));
-            
-            if(!isDel) ui.listTitle.innerHTML = `<span class="text-custom-accent font-bold">${currentMonth}月份</span> <span class="mx-1.5">-</span> <span>${currentTab==='safe'?'保險箱':'保留區'}</span> <span class="text-xs font-normal ml-2 text-custom-dark/50">(共 ${list.length} 件)</span>`;
+            if (isDel) {
+                list.sort((a,b) => new Date(b.deletedAtStr) - new Date(a.deletedAtStr));
+            } else {
+                list.sort((a,b) => new Date(a.date) - new Date(b.date));
+                const catName = currentTab === 'safe' ? '保險箱' : '保留區';
+                ui.listTitle.innerHTML = "<span class='text-custom-accent font-bold'>" + currentMonth + "月份</span> <span class='mx-1.5'>-</span> <span>" + catName + "</span> <span class='text-xs font-normal ml-2 text-custom-dark/50'>(共 " + list.length + " 件)</span>";
+            }
             
             if (list.length === 0) {
                 ui.emptyState.classList.remove('hidden'); ui.emptyState.classList.add('flex');
                 ui.emptyStateText.innerText = isDel ? (searchQuery ? "找不到符合的結果" : "目前沒有刪除紀錄") : "這個月份沒有紀錄";
             } else {
                 ui.emptyState.classList.add('hidden'); ui.emptyState.classList.remove('flex');
-                list.forEach(i => ui.listContainer.insertAdjacentHTML('beforeend', isDel ? createDeletedRow(i) : createActiveRow(i)));
+                list.forEach(item => {
+                    const row = document.createElement('div');
+                    row.innerHTML = isDel ? createDeletedRowHTML(item) : createActiveRowHTML(item);
+                    ui.listContainer.appendChild(row.firstElementChild);
+                });
             }
         }
 
-        function createActiveRow(item) {
-            return `
-            <div class="flex flex-col md:flex-row md:items-center justify-between p-4 px-6 border-b border-custom-dark/5 hover:bg-custom-base/40 gap-3 transition-colors">
-                <div class="flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-6 min-w-0">
-                    <div class="flex items-center md:w-28 shrink-0"><span class="text-xs font-bold text-custom-dark/50 tracking-wider">${item.date}</span></div>
-                    <div class="flex flex-col min-w-0 flex-1">
-                        <div class="flex items-center gap-3"><span class="font-bold text-lg whitespace-nowrap">Rm ${item.room}</span><h4 class="font-bold text-custom-dark/90 text-base truncate">${item.name}</h4></div>
-                        <div class="flex items-center gap-4 mt-1.5 text-[11px] text-custom-dark/60 flex-wrap">
-                            ${item.ownerName || item.ownerPhone ? `<span class="bg-custom-accent/15 text-custom-accent px-2.5 py-0.5 rounded-md font-bold flex items-center gap-1.5"><i class="fas fa-address-book text-[10px]"></i> ${item.ownerName\vert{}\vert{}'未留名'} ${item.ownerPhone?' - '+item.ownerPhone:''}</span>` : ''}
-                            ${item.finder ? `<span class="flex items-center gap-1"><i class="fas fa-user-tag opacity-40"></i>拾獲: ${item.finder}</span>` : ''}
-                            ${item.note ? `<span class="flex items-center gap-1"><i class="fas fa-quote-left opacity-40"></i>${item.note}</span>` : ''}
-                            ${item.editHistory ? `<span class="cursor-help text-amber-600/80 font-bold border-b border-dashed border-amber-600/30 flex items-center gap-1" title="${item.editHistory}"><i class="fas fa-pen text-[9px]"></i>曾修改</span>` : ''}
-                        </div>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2.5 shrink-0 self-end md:self-auto mt-3 md:mt-0">
-                    <div class="text-[10px] text-right text-custom-dark/40 mr-2 hidden sm:block leading-tight">建檔<br><span class="font-bold text-custom-dark/70">${item.addedBy}</span></div>
-                    <button onclick="openEditModal('${item.id}')" class="px-3 py-1.5 border border-custom-dark/20 text-custom-dark hover:bg-custom-dark hover:text-white rounded-md text-xs font-bold transition-colors">編輯</button>
-                    <button onclick="openRetrieveModal('${item.id}')" class="px-4 py-1.5 bg-custom-accent text-white hover:bg-[#5fb3c9] rounded-md text-xs font-bold transition-colors shadow-sm">取出</button>
-                </div>
-            </div>`;
+        function createActiveRowHTML(item) {
+            let ownerBadge = "";
+            if (item.ownerName || item.ownerPhone) {
+                const n = item.ownerName || "未留名";
+                const p = item.ownerPhone ? " - " + item.ownerPhone : "";
+                ownerBadge = "<span class='bg-custom-accent/15 text-custom-accent px-2.5 py-0.5 rounded-md font-bold flex items-center gap-1.5'><i class='fas fa-address-book text-[10px]'></i> " + n + p + "</span>";
+            }
+            const finderBadge = item.finder ? "<span class='flex items-center gap-1'><i class='fas fa-user-tag opacity-40'></i>拾獲: " + item.finder + "</span>" : "";
+            const noteBadge = item.note ? "<span class='flex items-center gap-1'><i class='fas fa-quote-left opacity-40'></i>" + item.note + "</span>" : "";
+            const editBadge = item.editHistory ? "<span class='cursor-help text-amber-600/80 font-bold border-b border-dashed border-amber-600/30 flex items-center gap-1' title='" + item.editHistory.replace(/'/g, "&#39;") + "'><i class='fas fa-pen text-[9px]'></i>曾修改</span>" : "";
+
+            return "<div class='flex flex-col md:flex-row md:items-center justify-between p-4 px-6 border-b border-custom-dark/5 hover:bg-custom-base/40 gap-3'>" +
+                "<div class='flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-6 min-w-0'>" +
+                    "<div class='flex items-center md:w-28 shrink-0'><span class='text-xs font-bold text-custom-dark/50 tracking-wider'>" + item.date + "</span></div>" +
+                    "<div class='flex flex-col min-w-0 flex-1'>" +
+                        "<div class='flex items-center gap-3'><span class='font-bold text-lg whitespace-nowrap'>Rm " + item.room + "</span><h4 class='font-bold text-custom-dark/90 text-base truncate'>" + item.name + "</h4></div>" +
+                        "<div class='flex items-center gap-4 mt-1.5 text-[11px] text-custom-dark/60 flex-wrap'>" + ownerBadge + finderBadge + noteBadge + editBadge + "</div>" +
+                    "</div>" +
+                "</div>" +
+                "<div class='flex items-center gap-2.5 shrink-0 self-end md:self-auto mt-3 md:mt-0'>" +
+                    "<div class='text-[10px] text-right text-custom-dark/40 mr-2 hidden sm:block leading-tight'>建檔<br><span class='font-bold text-custom-dark/70'>" + item.addedBy + "</span></div>" +
+                    "<button onclick=\"openEditModal('" + item.id + "')\" class='px-3 py-1.5 border border-custom-dark/20 text-custom-dark hover:bg-custom-dark hover:text-white rounded-md text-xs font-bold'>編輯</button>" +
+                    "<button onclick=\"openRetrieveModal('" + item.id + "')\" class='px-4 py-1.5 bg-custom-accent text-white hover:bg-[#5fb3c9] rounded-md text-xs font-bold shadow-sm'>取出</button>" +
+                "</div>" +
+            "</div>";
         }
 
-        function createDeletedRow(item) {
-            const badge = item.deleteReason === 'guest' ? `<span class="text-custom-accent font-bold bg-custom-accent/10 px-2 py-0.5 rounded flex items-center gap-1"><i class="fas fa-user-check text-[10px]"></i> 客人取走</span>` : `<span class="text-custom-dark/70 font-bold bg-custom-dark/5 px-2 py-0.5 rounded flex items-center gap-1"><i class="fas fa-trash-alt text-[10px]"></i> 逾期整理</span>`;
-            return `
-            <div class="flex flex-col md:flex-row md:items-center justify-between p-4 px-6 border-b border-custom-dark/5 bg-white opacity-95 gap-3 hover:bg-custom-base/20 transition-colors">
-                <div class="flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-6 min-w-0">
-                    <div class="flex items-center gap-2 md:w-28 shrink-0"><span class="text-[10px] px-1.5 py-0.5 bg-custom-base text-custom-dark/60 rounded font-bold">${item.category==='safe'?'保險箱':'保留區'}</span><span class="text-[11px] font-bold text-custom-dark/30 line-through">${item.date}</span></div>
-                    <div class="flex flex-col min-w-0 flex-1">
-                        <div class="flex items-center gap-3"><span class="font-bold text-custom-dark/40 text-lg line-through">Rm ${item.room}</span><h4 class="font-bold text-custom-dark/40 text-base truncate line-through">${item.name}</h4><div class="ml-2 text-[11px]">${badge}</div></div>
-                        <div class="flex items-center gap-4 mt-1.5 text-[11px] text-custom-dark/40 flex-wrap">
-                            ${item.ownerName || item.ownerPhone ? `<span class="flex items-center gap-1.5"><i class="fas fa-address-book opacity-40"></i>失主: ${item.ownerName\vert{}\vert{}'未填'} ${item.ownerPhone||''}</span>` : ''}
-                            ${item.editHistory ? `<span class="cursor-help border-b border-dashed border-custom-dark/20 flex items-center gap-1" title="${item.editHistory}"><i class="fas fa-pen text-[9px] opacity-60"></i>曾修改</span>` : ''}
-                        </div>
-                    </div>
-                </div>
-                <div class="flex flex-col items-end shrink-0 text-[10px] text-custom-dark/50 bg-custom-base/40 px-3 py-1.5 rounded-lg border border-custom-dark/5"><div>處理: <span class="font-bold text-custom-dark/70">${item.deletedBy}</span></div><div class="mt-0.5 text-[9px]">${item.deletedAtStr}</div></div>
-            </div>`;
+        function createDeletedRowHTML(item) {
+            const badge = item.deleteReason === 'guest' ? "<span class='text-custom-accent font-bold bg-custom-accent/10 px-2 py-0.5 rounded flex items-center gap-1'><i class='fas fa-user-check text-[10px]'></i> 客人取走</span>" : "<span class='text-custom-dark/70 font-bold bg-custom-dark/5 px-2 py-0.5 rounded flex items-center gap-1'><i class='fas fa-trash-alt text-[10px]'></i> 逾期整理</span>";
+            const catName = item.category === 'safe' ? '保險箱' : '保留區';
+            let ownerText = "";
+            if (item.ownerName || item.ownerPhone) {
+                const n = item.ownerName || "未填";
+                const p = item.ownerPhone || "";
+                ownerText = "<span class='flex items-center gap-1.5'><i class='fas fa-address-book opacity-40'></i>失主: " + n + " " + p + "</span>";
+            }
+            const editBadge = item.editHistory ? "<span class='cursor-help border-b border-dashed border-custom-dark/20 flex items-center gap-1' title='" + item.editHistory.replace(/'/g, "&#39;") + "'><i class='fas fa-pen text-[9px] opacity-60'></i>曾修改</span>" : "";
+
+            return "<div class='flex flex-col md:flex-row md:items-center justify-between p-4 px-6 border-b border-custom-dark/5 bg-white opacity-95 gap-3 hover:bg-custom-base/20'>" +
+                "<div class='flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-6 min-w-0'>" +
+                    "<div class='flex items-center gap-2 md:w-28 shrink-0'><span class='text-[10px] px-1.5 py-0.5 bg-custom-base text-custom-dark/60 rounded font-bold'>" + catName + "</span><span class='text-[11px] font-bold text-custom-dark/30 line-through'>" + item.date + "</span></div>" +
+                    "<div class='flex flex-col min-w-0 flex-1'>" +
+                        "<div class='flex items-center gap-3'><span class='font-bold text-custom-dark/40 text-lg line-through'>Rm " + item.room + "</span><h4 class='font-bold text-custom-dark/40 text-base truncate line-through'>" + item.name + "</h4><div class='ml-2 text-[11px]'>" + badge + "</div></div>" +
+                        "<div class='flex items-center gap-4 mt-1.5 text-[11px] text-custom-dark/40 flex-wrap'>" + ownerText + editBadge + "</div>" +
+                    "</div>" +
+                "</div>" +
+                "<div class='flex flex-col items-end shrink-0 text-[10px] text-custom-dark/50 bg-custom-base/40 px-3 py-1.5 rounded-lg border border-custom-dark/5'><div>處理: <span class='font-bold text-custom-dark/70'>" + item.deletedBy + "</span></div><div class='mt-0.5 text-[9px]'>" + item.deletedAtStr + "</div></div>" +
+            "</div>";
         }
 
-        // --- 彈出視窗 ---
         function openAddModal() {
             editTargetId = null;
             document.getElementById('modal-title-text').innerText = '新增物品登記';
             document.getElementById('modal-icon').className = 'fas fa-plus text-sm';
             document.getElementById('modal-submit-btn').innerText = '確認新增';
             document.getElementById('item-category').disabled = false;
-            
             document.getElementById('item-category').value = currentTab !== 'deleted' ? currentTab : 'safe';
             
             const today = new Date();
             const yyyy = today.getFullYear();
             const mm = String(today.getMonth() + 1).padStart(2, '0');
             const dd = String(today.getDate()).padStart(2, '0');
-            document.getElementById('item-date').value = `${yyyy}-${mm}-${dd}`;
+            document.getElementById('item-date').value = yyyy + "-" + mm + "-" + dd;
             
-            ['room','name','owner-name','owner-phone','finder','note'].forEach(id => document.getElementById(`item-${id}`).value = '');
+            ['room','name','owner-name','owner-phone','finder','note'].forEach(id => document.getElementById('item-'+id).value = '');
             
             ui.itemModal.classList.remove('hidden');
             ui.itemModal.querySelector('div').classList.replace('modal-enter', 'modal-enter-active');
@@ -567,14 +579,14 @@
                 if(diffs.length === 0) return closeItemModal();
                 
                 const now = new Date();
-                const logTime = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-                const editLog = `[${logTime}] ${currentUser}修改: ${diffs.join(', ')}`;
+                const logTime = now.getFullYear() + "/" + String(now.getMonth()+1).padStart(2,'0') + "/" + String(now.getDate()).padStart(2,'0') + " " + String(now.getHours()).padStart(2,'0') + ":" + String(now.getMinutes()).padStart(2,'0');
+                const editLog = "[" + logTime + "] " + currentUser + "修改: " + diffs.join(', ');
                 
                 old.date = v.date; old.month = pMonth; old.room = v.room; old.name = v.name; 
                 old.ownerName = v.ownerName; old.ownerPhone = v.ownerPhone; old.finder = v.finder; old.note = v.note;
                 old.editHistory = old.editHistory ? old.editHistory + '\n' + editLog : editLog;
                 
-                closeItemModal(); renderView(); showToast(`✅ 修改已儲存 (同步中...)`, 'success');
+                closeItemModal(); renderView(); showToast("✅ 修改已儲存", 'success');
                 
                 try {
                     await fetch(API_URL, {
@@ -599,7 +611,7 @@
                 closeItemModal(); currentTab = v.cat; currentMonth = pMonth;
                 ui.btnDeletedZone.classList.replace('bg-custom-dark', 'bg-custom-base');
                 ui.btnDeletedZone.classList.replace('text-white', 'text-custom-dark');
-                renderView(); showToast(`✅ 已新增：Rm ${v.room} ${v.name}`, 'success');
+                renderView(); showToast("✅ 已新增：Rm " + v.room + " " + v.name, 'success');
                 
                 try {
                     await fetch(API_URL, {
@@ -640,7 +652,7 @@
 
                 item.status = 'deleted'; item.deleteReason = reason; item.deletedBy = currentUser;
                 const now = new Date();
-                item.deletedAtStr = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+                item.deletedAtStr = now.getFullYear() + "/" + String(now.getMonth()+1).padStart(2,'0') + "/" + String(now.getDate()).padStart(2,'0') + " " + String(now.getHours()).padStart(2,'0') + ":" + String(now.getMinutes()).padStart(2,'0');
                 
                 closeRetrieveModal(); renderView();
                 showToast(reason === 'guest' ? '✅ 客人已取走' : '✅ 已逾期整理', 'success');
@@ -659,8 +671,10 @@
 
         function showToast(msg, type = 'success') {
             const div = document.createElement('div');
-            div.className = `${type === 'success' ? 'bg-custom-dark text-white' : 'bg-red-500 text-white'} px-5 py-3 rounded-lg shadow-lg text-sm flex items-center gap-2.5 transform transition-all -translate-y-full opacity-0 font-bold tracking-wide`;
-            div.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check text-custom-accent' : 'fa-exclamation-triangle text-amber-300'} text-base"></i> <span>${msg}</span>`;
+            const colorClass = type === 'success' ? 'bg-custom-dark text-white' : 'bg-red-500 text-white';
+            const iconClass = type === 'success' ? 'fa-check text-custom-accent' : 'fa-exclamation-triangle text-amber-300';
+            div.className = colorClass + " px-5 py-3 rounded-lg shadow-lg text-sm flex items-center gap-2.5 transform transition-all -translate-y-full opacity-0 font-bold tracking-wide";
+            div.innerHTML = "<i class='fas " + iconClass + " text-base'></i> <span>" + msg + "</span>";
             document.getElementById('toast-container').appendChild(div);
             requestAnimationFrame(() => div.classList.remove('-translate-y-full', 'opacity-0'));
             setTimeout(() => { div.classList.add('-translate-y-full', 'opacity-0'); setTimeout(() => div.remove(), 300); }, 2500);
